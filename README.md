@@ -10,4 +10,4 @@ o projeto visa melhorar minhas habilidades em desenvolvimento de software.
 - Buscar livros por título ou autor.
 - Registrar locaçoes com atualização automática do estoque.
 - Interface responsiva e intuitiva para desktop e celular.
-*Nota*: Este é o backlog inicial, que pode evoluir com novas prioridades, seguindo uma abordagem Ágil.
+*Nota*: Este é o backlog inicial, que pode evoluir com novas prioridades.
