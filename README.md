@@ -1,5 +1,5 @@
 
-# ERP controle de estoque - Livraria
+# ERP controle de estoque - Biblioteca comunitaria
 
 ## Sobre o Projeto
 Este é um projeto ERP web e android para gerenciar o estoque de uma biblioteca, permitindo cadastrar um livro doado, busca livros em estoque e tambem livros locados. Será Desenvolvido em Java (Spring Boot) e Next.js,
