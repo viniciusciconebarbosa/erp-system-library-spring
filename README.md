@@ -11,3 +11,22 @@ o projeto visa melhorar minhas habilidades em desenvolvimento de software.
 - Registrar locaçoes com atualização automática do estoque.
 - Interface responsiva e intuitiva para desktop e celular.
 *Nota*: Este é o backlog inicial, que pode evoluir com novas prioridades.
+
+
+## Cronograma
+- Semana data: Planejamento e configuração do projeto.
+- Semanas d-data: Desenvolvimento do cadastro e busca.
+- Semana data: Implementação de locaçoes e testes.
+- Semana data: Ajustes finais e deploy.
+
+## Tecnologias Utilizadas
+- **Back-end**: Java (Spring Boot) para a API REST.
+- **Front-end**: Next.js para a interface web.
+- **Banco de Dados**: MySQL para armazenar livros e vendas.
+- **Ferramentas**: VS Code, Git, GitHub, Vercel e Oracle (deploy).
+
+## Arquitetura
+O sistema segue uma arquitetura cliente-servidor:
+- **Front-end**: Next.js faz requisições HTTP à API.
+- **Back-end**: Spring Boot gerencia lógica.
+- **Banco**: armazena tabelas de livros e vendas.
