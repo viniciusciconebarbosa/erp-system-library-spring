@@ -3,6 +3,8 @@
 CREATE TABLE usuarios (
     id BINARY(16) NOT NULL,
     nome VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
     idade INT,
     role VARCHAR(50) NOT NULL,
     PRIMARY KEY (id),
