@@ -12,7 +12,7 @@ public class HomeController {
     
     @GetMapping("/")
     public String home() {
-        return "redirect:/swagger-ui.html";
+        return "forward:/index.html";
     }
     
     @GetMapping("/health")
