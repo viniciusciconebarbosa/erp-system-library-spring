@@ -5,6 +5,8 @@ import com.biblioteca.erp_biblioteca.enums.EstadoConservacao;
 import com.biblioteca.erp_biblioteca.enums.Genero;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class LivroDTO {
     private String titulo;
