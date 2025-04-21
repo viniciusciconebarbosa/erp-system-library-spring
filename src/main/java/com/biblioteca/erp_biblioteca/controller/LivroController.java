@@ -3,6 +3,7 @@ package com.biblioteca.erp_biblioteca.controller;
 import com.biblioteca.erp_biblioteca.dto.LivroDTO;
 import com.biblioteca.erp_biblioteca.model.Livro;
 import com.biblioteca.erp_biblioteca.service.LivroService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +20,7 @@ public class LivroController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'COMUM')")
-    public ResponseEntity<Livro> cadastrarLivro(@RequestBody LivroDTO livroDTO) {
+    public ResponseEntity<Livro> cadastrarLivro(@Valid @RequestBody LivroDTO livroDTO) {
         Livro novoLivro = livroService.cadastrarLivro(livroDTO);
         return ResponseEntity.ok(novoLivro);
     }
@@ -46,7 +47,7 @@ public class LivroController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Livro> atualizarLivro(
             @PathVariable UUID id,
-            @RequestBody LivroDTO livroDTO) {
+            @Valid @RequestBody LivroDTO livroDTO) {
         Livro livroAtualizado = livroService.atualizarLivro(id, livroDTO);
         return ResponseEntity.ok(livroAtualizado);
     }

@@ -3,6 +3,7 @@ package com.biblioteca.erp_biblioteca.controller;
 import com.biblioteca.erp_biblioteca.dto.LocacaoDTO;
 import com.biblioteca.erp_biblioteca.model.Locacao;
 import com.biblioteca.erp_biblioteca.service.LocacaoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +20,7 @@ public class LocacaoController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'COMUM')")
-    public ResponseEntity<Locacao> criarLocacao(@RequestBody LocacaoDTO locacaoDTO) {
+    public ResponseEntity<Locacao> criarLocacao(@Valid @RequestBody LocacaoDTO locacaoDTO) {
         Locacao novaLocacao = locacaoService.criarLocacao(locacaoDTO);
         return ResponseEntity.ok(novaLocacao);
     }
