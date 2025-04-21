@@ -65,6 +65,9 @@ public class GlobalExceptionHandler {
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
+        
+        // Adiciona a informação sobre o doadorId mesmo quando não há erro
+        errors.put("doadorId", "ID do usuário doador (opcional)");
 
         ApiError apiError = new ApiError(
             HttpStatus.BAD_REQUEST.value(),

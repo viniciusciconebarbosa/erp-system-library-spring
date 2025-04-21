@@ -14,11 +14,14 @@ public class UsuarioDTO {
     private String email;
     
     @NotBlank(message = "Senha é obrigatória")
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", 
-             message = "Senha deve ter no mínimo 8 caracteres, uma letra e um número")
+    @Pattern(
+        regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", 
+        message = "Senha deve ter no mínimo 8 caracteres, contendo letras e números"
+    )
     private String senha;
     
+    @NotNull(message = "Idade é obrigatória")
     @Min(value = 16, message = "Idade mínima é 16 anos")
     @Max(value = 120, message = "Idade máxima é 120 anos")
-    private int idade;
+    private Integer idade;
 }
