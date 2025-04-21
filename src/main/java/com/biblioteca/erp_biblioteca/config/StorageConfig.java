@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
@@ -17,12 +18,17 @@ import java.util.List;
 public class StorageConfig {
     private String uploadDir;
     private long maxFileSize; // em bytes
-    private List<String> allowedContentTypes;
+    private List<String> allowedContentTypes = new ArrayList<>(); // Inicialização da lista
     private int imageMaxWidth;
     private int imageMaxHeight;
 
     @Bean
     public Path rootLocation() {
         return Paths.get(uploadDir);
+    }
+
+    // Método explícito para garantir que nunca retorne null
+    public List<String> getAllowedContentTypes() {
+        return allowedContentTypes != null ? allowedContentTypes : new ArrayList<>();
     }
 }
