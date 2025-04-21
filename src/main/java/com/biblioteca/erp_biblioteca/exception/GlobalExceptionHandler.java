@@ -2,6 +2,7 @@ package com.biblioteca.erp_biblioteca.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,6 +18,24 @@ import java.util.Map;
 @RestControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiError> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        String mensagem = "O corpo da requisição está ausente ou mal formatado";
+        
+        if (ex.getMessage().contains("Required request body is missing")) {
+            mensagem = "O corpo da requisição é obrigatório";
+        }
+
+        ApiError apiError = new ApiError(
+            HttpStatus.BAD_REQUEST.value(),
+            mensagem,
+            LocalDateTime.now(),
+            Map.of("detail", "Verifique se o JSON enviado está correto e todos os campos obrigatórios estão presentes")
+        );
+        
+        return ResponseEntity.badRequest().body(apiError);
+    }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ApiError> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
