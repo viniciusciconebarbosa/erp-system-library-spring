@@ -22,16 +22,33 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiError> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
         String mensagem = "O corpo da requisição está ausente ou mal formatado";
+        Map<String, String> detalhes = new HashMap<>();
+        String errorMessage = ex.getMessage();
         
-        if (ex.getMessage().contains("Required request body is missing")) {
+        if (errorMessage.contains("UUID")) {
+            mensagem = "Formato de UUID inválido";
+            detalhes.put("detail", "O ID deve ser um UUID válido, exemplo: 123e4567-e89b-12d3-a456-426614174000");
+        } else if (errorMessage.contains("Required request body is missing")) {
             mensagem = "O corpo da requisição é obrigatório";
+            detalhes.put("detail", "Verifique se o JSON foi enviado corretamente");
+        } else if (errorMessage.contains("EstadoConservacao")) {
+            mensagem = "Valor inválido para estado de conservação";
+            detalhes.put("detail", "Valores aceitos: NOVO, OTIMO, BOM, REGULAR, RUIM");
+        } else if (errorMessage.contains("Genero")) {
+            mensagem = "Valor inválido para gênero";
+            detalhes.put("detail", "Valores aceitos: FICCAO, NAO_FICCAO, TERROR, ROMANCE, EDUCACAO, TECNICO");
+        } else if (errorMessage.contains("ClassificacaoEtaria")) {
+            mensagem = "Valor inválido para classificação etária";
+            detalhes.put("detail", "Valores aceitos: LIVRE, DOZE_ANOS, QUATORZE_ANOS, DEZESSEIS_ANOS, DEZOITO_ANOS");
+        } else {
+            detalhes.put("detail", "Verifique se o JSON enviado está correto e todos os campos obrigatórios estão presentes");
         }
 
         ApiError apiError = new ApiError(
             HttpStatus.BAD_REQUEST.value(),
             mensagem,
             LocalDateTime.now(),
-            Map.of("detail", "Verifique se o JSON enviado está correto e todos os campos obrigatórios estão presentes")
+            detalhes
         );
         
         return ResponseEntity.badRequest().body(apiError);

@@ -55,8 +55,13 @@ public class LocacaoController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> cancelarLocacao(@PathVariable UUID id) {
+    public ResponseEntity<DeleteResponse> cancelarLocacao(@PathVariable UUID id) {
         locacaoService.cancelarLocacao(id);
-        return ResponseEntity.noContent().build();
+        DeleteResponse response = new DeleteResponse(
+            "Locação cancelada com sucesso",
+            id.toString(),
+            "Locacao"
+        );
+        return ResponseEntity.ok(response);
     }
 }

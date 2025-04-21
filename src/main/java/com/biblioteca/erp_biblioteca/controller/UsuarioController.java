@@ -1,5 +1,6 @@
 package com.biblioteca.erp_biblioteca.controller;
 
+import com.biblioteca.erp_biblioteca.dto.DeleteResponse;
 import com.biblioteca.erp_biblioteca.dto.UsuarioDTO;
 import com.biblioteca.erp_biblioteca.enums.Role;
 import com.biblioteca.erp_biblioteca.model.Usuario;
@@ -65,8 +66,13 @@ public class UsuarioController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deletarUsuario(@PathVariable UUID id) {
+    public ResponseEntity<DeleteResponse> deletarUsuario(@PathVariable UUID id) {
         usuarioService.deletarUsuario(id);
-        return ResponseEntity.noContent().build();
+        DeleteResponse response = new DeleteResponse(
+            "Usuário deletado com sucesso",
+            id.toString(),
+            "Usuario"
+        );
+        return ResponseEntity.ok(response);
     }
 }

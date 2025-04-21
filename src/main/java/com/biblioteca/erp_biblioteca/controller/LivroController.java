@@ -1,5 +1,6 @@
 package com.biblioteca.erp_biblioteca.controller;
 
+import com.biblioteca.erp_biblioteca.dto.DeleteResponse;
 import com.biblioteca.erp_biblioteca.dto.LivroDTO;
 import com.biblioteca.erp_biblioteca.model.Livro;
 import com.biblioteca.erp_biblioteca.service.LivroService;
@@ -54,8 +55,13 @@ public class LivroController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deletarLivro(@PathVariable UUID id) {
+    public ResponseEntity<DeleteResponse> deletarLivro(@PathVariable UUID id) {
         livroService.deletarLivro(id);
-        return ResponseEntity.noContent().build();
+        DeleteResponse response = new DeleteResponse(
+            "Livro deletado com sucesso",
+            id.toString(),
+            "Livro"
+        );
+        return ResponseEntity.ok(response);
     }
 }
