@@ -3,6 +3,7 @@ package com.biblioteca.erp_biblioteca.service;
 import com.biblioteca.erp_biblioteca.dto.UsuarioDTO;
 import com.biblioteca.erp_biblioteca.enums.Role;
 import com.biblioteca.erp_biblioteca.exception.BusinessException;
+import com.biblioteca.erp_biblioteca.exception.EmailJaCadastradoException;
 import com.biblioteca.erp_biblioteca.model.Usuario;
 import com.biblioteca.erp_biblioteca.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class UsuarioService {
 
     public Usuario criarUsuario(UsuarioDTO usuarioDTO) {
         if (usuarioRepository.findByEmail(usuarioDTO.getEmail()).isPresent()) {
-            throw new RuntimeException("Email já cadastrado");
+            throw new EmailJaCadastradoException();
         }
 
         Usuario usuario = Usuario.builder()
