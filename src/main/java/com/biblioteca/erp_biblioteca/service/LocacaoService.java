@@ -2,6 +2,7 @@ package com.biblioteca.erp_biblioteca.service;
 
 import com.biblioteca.erp_biblioteca.dto.LocacaoDTO;
 import com.biblioteca.erp_biblioteca.enums.StatusLocacao;
+import com.biblioteca.erp_biblioteca.exception.BusinessException;
 import com.biblioteca.erp_biblioteca.model.Locacao;
 import com.biblioteca.erp_biblioteca.model.Usuario;
 import com.biblioteca.erp_biblioteca.model.Livro;
@@ -81,18 +82,9 @@ public class LocacaoService {
 
     @Transactional
     public void cancelarLocacao(UUID id) {
-        Locacao locacao = buscarLocacao(id);
-        
-        if (locacao.getStatus() == StatusLocacao.FINALIZADA) {
-            throw new RuntimeException("Não é possível cancelar uma locação finalizada");
+        if (!locacaoRepository.existsById(id)) {
+            throw new BusinessException("Locação não encontrada");
         }
-
-        Livro livro = locacao.getLivro();
-        livro.setDisponivelLocacao(true);
-        livroRepository.save(livro);
-
-        locacao.setStatus(StatusLocacao.CANCELADA);
-        locacao.setDataDevolucao(new Date());
-        locacaoRepository.save(locacao);
+        locacaoRepository.deleteById(id);
     }
 }

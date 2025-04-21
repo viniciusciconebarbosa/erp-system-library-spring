@@ -6,9 +6,11 @@ import com.biblioteca.erp_biblioteca.model.Livro;
 import com.biblioteca.erp_biblioteca.service.LivroService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,10 +21,13 @@ import java.util.UUID;
 public class LivroController {
     private final LivroService livroService;
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN', 'COMUM')")
-    public ResponseEntity<Livro> cadastrarLivro(@Valid @RequestBody LivroDTO livroDTO) {
-        Livro novoLivro = livroService.cadastrarLivro(livroDTO);
+    public ResponseEntity<Livro> cadastrarLivro(
+            @Valid @RequestPart("livro") LivroDTO livroDTO,
+            @RequestPart(value = "capa", required = false) MultipartFile capaFile) {
+        
+        Livro novoLivro = livroService.cadastrarLivro(livroDTO, capaFile);
         return ResponseEntity.ok(novoLivro);
     }
 

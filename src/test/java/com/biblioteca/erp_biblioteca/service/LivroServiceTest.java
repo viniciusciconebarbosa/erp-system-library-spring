@@ -1,16 +1,22 @@
 package com.biblioteca.erp_biblioteca.service;
 
 import com.biblioteca.erp_biblioteca.dto.LivroDTO;
+import com.biblioteca.erp_biblioteca.enums.ClassificacaoEtaria;
+import com.biblioteca.erp_biblioteca.enums.EstadoConservacao;
+import com.biblioteca.erp_biblioteca.enums.Genero;
 import com.biblioteca.erp_biblioteca.model.Livro;
 import com.biblioteca.erp_biblioteca.model.Usuario;
 import com.biblioteca.erp_biblioteca.repository.LivroRepository;
 import com.biblioteca.erp_biblioteca.repository.UsuarioRepository;
+import com.biblioteca.erp_biblioteca.service.storage.StorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,12 +36,15 @@ class LivroServiceTest {
     @Mock
     private UsuarioRepository usuarioRepository;
 
+    @Mock
+    private StorageService storageService;
+
     @InjectMocks
     private LivroService livroService;
 
     private LivroDTO livroDTO;
     private Usuario doador;
-
+    private MultipartFile capaFile;
 
     @BeforeEach
     void setUp() {
@@ -45,10 +54,45 @@ class LivroServiceTest {
         livroDTO = new LivroDTO();
         livroDTO.setTitulo("O Senhor dos Anéis");
         livroDTO.setDoadorId(doador.getId());
+        livroDTO.setGenero(Genero.FICCAO);
+        livroDTO.setClassificacaoEtaria(ClassificacaoEtaria.LIVRE);
+        livroDTO.setEstadoConservacao(EstadoConservacao.BOM);
+
+        // Mock do MultipartFile
+        capaFile = new MockMultipartFile(
+            "capa",
+            "capa.jpg",
+            "image/jpeg",
+            "test image content".getBytes()
+        );
     }
 
     @Test
     void deveCadastrarLivroComSucesso() {
+        // Given
+        when(usuarioRepository.findById(livroDTO.getDoadorId())).thenReturn(Optional.of(doador));
+        when(storageService.store(any())).thenReturn("capa.jpg");
+        when(storageService.getFileUrl(any())).thenReturn("http://localhost/images/capa.jpg");
+        when(livroRepository.save(any())).thenAnswer(i -> {
+            Livro l = (Livro) i.getArguments()[0];
+            l.setId(UUID.randomUUID());
+            return l;
+        });
+
+        // When
+        Livro livro = livroService.cadastrarLivro(livroDTO, capaFile);
+
+        // Then
+        assertNotNull(livro.getId());
+        assertEquals(livroDTO.getTitulo(), livro.getTitulo());
+        assertEquals(doador, livro.getDoador());
+        assertTrue(livro.isDisponivelLocacao());
+        assertEquals("http://localhost/images/capa.jpg", livro.getCapaFoto());
+    }
+
+    @Test
+    void deveCadastrarLivroSemCapa() {
+        // Given
         when(usuarioRepository.findById(livroDTO.getDoadorId())).thenReturn(Optional.of(doador));
         when(livroRepository.save(any())).thenAnswer(i -> {
             Livro l = (Livro) i.getArguments()[0];
@@ -56,12 +100,15 @@ class LivroServiceTest {
             return l;
         });
 
-        Livro livro = livroService.cadastrarLivro(livroDTO);
+        // When
+        Livro livro = livroService.cadastrarLivro(livroDTO, null);
 
+        // Then
         assertNotNull(livro.getId());
         assertEquals(livroDTO.getTitulo(), livro.getTitulo());
         assertEquals(doador, livro.getDoador());
         assertTrue(livro.isDisponivelLocacao());
+        assertNull(livro.getCapaFoto());
     }
 
     @Test

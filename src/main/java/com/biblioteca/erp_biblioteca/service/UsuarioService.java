@@ -2,6 +2,7 @@ package com.biblioteca.erp_biblioteca.service;
 
 import com.biblioteca.erp_biblioteca.dto.UsuarioDTO;
 import com.biblioteca.erp_biblioteca.enums.Role;
+import com.biblioteca.erp_biblioteca.exception.BusinessException;
 import com.biblioteca.erp_biblioteca.model.Usuario;
 import com.biblioteca.erp_biblioteca.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -88,7 +89,7 @@ public class UsuarioService {
 
     public void deletarUsuario(UUID id) {
         if (!usuarioRepository.existsById(id)) {
-            throw new RuntimeException("Usuário não encontrado");
+            throw new BusinessException("Usuário não encontrado");
         }
         usuarioRepository.deleteById(id);
     }

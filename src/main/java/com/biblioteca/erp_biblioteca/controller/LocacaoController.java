@@ -1,5 +1,6 @@
 package com.biblioteca.erp_biblioteca.controller;
 
+import com.biblioteca.erp_biblioteca.dto.DeleteResponse;
 import com.biblioteca.erp_biblioteca.dto.LocacaoDTO;
 import com.biblioteca.erp_biblioteca.model.Locacao;
 import com.biblioteca.erp_biblioteca.service.LocacaoService;

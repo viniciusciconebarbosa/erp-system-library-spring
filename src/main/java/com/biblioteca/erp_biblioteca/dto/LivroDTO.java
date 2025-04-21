@@ -20,8 +20,7 @@ public class LivroDTO {
     @NotNull(message = "Valores aceitos: [FICCAO, NAO_FICCAO, TERROR, ROMANCE, EDUCACAO, TECNICO]")
     private Genero genero;
 
-    @NotBlank(message = "URL da capa é obrigatória")
-    @Size(max = 255, message = "URL da capa deve ter no máximo 255 caracteres")
+    // Removida a validação de obrigatoriedade
     private String capaFoto;
 
     @NotNull(message = "Valores aceitos: [LIVRE, DOZE_ANOS, QUATORZE_ANOS, DEZESSEIS_ANOS, DEZOITO_ANOS]")
@@ -30,6 +29,5 @@ public class LivroDTO {
     @NotNull(message = "Valores aceitos: [NOVO, OTIMO, BOM, REGULAR, RUIM]")
     private EstadoConservacao estadoConservacao;
 
-    @Schema(description = "ID do usuário doador (opcional)")
     private UUID doadorId;
 }
