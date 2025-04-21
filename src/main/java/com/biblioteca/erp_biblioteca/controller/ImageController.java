@@ -16,12 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ImageController {
     private final StorageService storageService;
 
-    @GetMapping("/{filename:.+}")
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-         Resource file = storageService.loadAsResource(filename);
-        return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + file.getFilename() + "\"")
-            .header(HttpHeaders.CACHE_CONTROL, "max-age=31536000")
-            .body(file);
+    @GetMapping(value = "/{filename:.+}", produces = "image/jpeg")
+    public Resource serveFile(@PathVariable String filename) {
+        return storageService.loadAsResource(filename);
     }
 }
