@@ -18,8 +18,11 @@ public class LivroService {
     private final UsuarioRepository usuarioRepository;
 
     public Livro cadastrarLivro(LivroDTO livroDTO) {
-        Usuario doador = usuarioRepository.findById(livroDTO.getDoadorId())
-            .orElseThrow(() -> new RuntimeException("Doador não encontrado"));
+        Usuario doador = null;
+        if (livroDTO.getDoadorId() != null) {
+            doador = usuarioRepository.findById(livroDTO.getDoadorId())
+                .orElseThrow(() -> new RuntimeException("ID do doador informado não existe"));
+        }
 
         Livro livro = Livro.builder()
             .titulo(livroDTO.getTitulo())
@@ -46,8 +49,11 @@ public class LivroService {
         Livro livro = livroRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Livro não encontrado"));
 
-        Usuario doador = usuarioRepository.findById(livroDTO.getDoadorId())
-            .orElseThrow(() -> new RuntimeException("Doador não encontrado"));
+        Usuario doador = null;
+        if (livroDTO.getDoadorId() != null) {
+            doador = usuarioRepository.findById(livroDTO.getDoadorId())
+                .orElseThrow(() -> new RuntimeException("ID do doador informado não existe"));
+        }
 
         livro.setTitulo(livroDTO.getTitulo());
         livro.setGenero(livroDTO.getGenero());
