@@ -3,6 +3,7 @@ package com.biblioteca.erp_biblioteca.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -13,9 +14,29 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestControllerAdvice(basePackages = "com.biblioteca.erp_biblioteca.controller")
+@RestControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiError> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
+        Map<String, String> details = new HashMap<>();
+        details.put("supportedMethods", String.join(", ", ex.getSupportedMethods()));
+        details.put("currentMethod", ex.getMethod());
+
+        ApiError apiError = new ApiError(
+            HttpStatus.METHOD_NOT_ALLOWED.value(),
+            String.format("O método '%s' não é suportado para este endpoint. Métodos suportados: %s",
+                ex.getMethod(),
+                String.join(", ", ex.getSupportedMethods())),
+            LocalDateTime.now(),
+            details
+        );
+        
+        return ResponseEntity
+            .status(HttpStatus.METHOD_NOT_ALLOWED)
+            .body(apiError);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidationErrors(MethodArgumentNotValidException ex) {
