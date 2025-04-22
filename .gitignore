@@ -5,6 +5,11 @@ target/
 !**/src/test/**/target/
 .idea/
 
+# Arquivos de ambiente
+.env
+.env.*
+!.env.example
+
 ### STS ###
 .apt_generated
 .classpath
