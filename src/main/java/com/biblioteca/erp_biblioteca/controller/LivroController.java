@@ -19,6 +19,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.ServletException;
+
 import java.io.IOException;
 
 import java.util.List;
@@ -35,18 +36,18 @@ public class LivroController {
     @PreAuthorize("hasAnyRole('ADMIN', 'COMUM')")
     @Operation(summary = "Cadastra um novo livro", description = "Cadastra um livro com dados básicos e uma imagem de capa opcional")
     public ResponseEntity<Livro> cadastrarLivro(
-            @Valid @RequestPart("livro") 
+            @Valid @RequestPart("livro")
             @Parameter(description = "Dados do livro em formato JSON") LivroDTO livroDTO,
-            
-            @RequestPart(value = "capa", required = false) 
+
+            @RequestPart(value = "capa", required = false)
             @Parameter(description = "Arquivo único de imagem para capa do livro (opcional). Formatos: JPG, PNG, GIF, WEBP. Tamanho máximo: 5MB")
             MultipartFile capaFile) {
-        
+
         // Validação para garantir que apenas um arquivo seja enviado
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
                 .currentRequestAttributes())
                 .getRequest();
-        
+
         try {
             if (request.getParts().stream()
                     .filter(part -> "capa".equals(part.getName()))
@@ -56,15 +57,15 @@ public class LivroController {
         } catch (IOException | ServletException e) {
             throw new BusinessException("Erro ao processar arquivo de upload: " + e.getMessage());
         }
-        
+
         if (capaFile != null && !capaFile.isEmpty()) {
             String contentType = capaFile.getContentType();
             if (!storageConfig.getAllowedContentTypes().contains(contentType)) {
-                throw new BusinessException("Formato de arquivo não permitido. Use apenas: " + 
-                    String.join(", ", storageConfig.getAllowedContentTypes()));
+                throw new BusinessException("Formato de arquivo não permitido. Use apenas: " +
+                        String.join(", ", storageConfig.getAllowedContentTypes()));
             }
         }
-        
+
         Livro novoLivro = livroService.cadastrarLivro(livroDTO, capaFile);
         return ResponseEntity.ok(novoLivro);
     }
@@ -101,9 +102,9 @@ public class LivroController {
     public ResponseEntity<DeleteResponse> deletarLivro(@PathVariable UUID id) {
         livroService.deletarLivro(id);
         DeleteResponse response = new DeleteResponse(
-            "Livro deletado com sucesso",
-            id.toString(),
-            "Livro"
+                "Livro deletado com sucesso",
+                id.toString(),
+                "Livro"
         );
         return ResponseEntity.ok(response);
     }

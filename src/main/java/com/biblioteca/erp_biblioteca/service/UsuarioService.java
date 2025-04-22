@@ -62,8 +62,7 @@ public class UsuarioService {
 
     public Usuario atualizarUsuario(UUID id, UsuarioDTO usuarioDTO) {
         Usuario usuario = buscarUsuario(id);
-        
-        // Verifica se o novo email já existe para outro usuário
+
         usuarioRepository.findByEmail(usuarioDTO.getEmail())
             .ifPresent(u -> {
                 if (!u.getId().equals(id)) {

@@ -20,7 +20,6 @@ public class LivroDTO {
     @NotNull(message = "Valores aceitos: [FICCAO, NAO_FICCAO, TERROR, ROMANCE, EDUCACAO, TECNICO]")
     private Genero genero;
 
-    // Removida a validação de obrigatoriedade
     private String capaFoto;
 
     @NotNull(message = "Valores aceitos: [LIVRE, DOZE_ANOS, QUATORZE_ANOS, DEZESSEIS_ANOS, DEZOITO_ANOS]")
