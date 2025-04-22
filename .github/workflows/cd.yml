@@ -1,0 +1,84 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: biblioteca-api
+
+    - name: Deploy to Oracle Cloud
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.ORACLE_HOST }}
+        username: ${{ secrets.ORACLE_USERNAME }}
+        key: ${{ secrets.ORACLE_SSH_KEY }}
+        script: |
+          # Criar diretório se não existir
+          mkdir -p ~/biblioteca-api
+          
+          # Parar serviço existente
+          sudo systemctl stop biblioteca-api || true
+          
+          # Criar arquivo .env usando secrets
+          cat > ~/biblioteca-api/.env << EOL
+          DB_URL=jdbc:mysql://${{ secrets.DB_HOST }}:3306/erp_biblioteca?createDatabaseIfNotExist=true
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          SPRING_PROFILES_ACTIVE=prod
+          EOL
+
+    - name: Copy JAR to server
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.ORACLE_HOST }}
+        username: ${{ secrets.ORACLE_USERNAME }}
+        key: ${{ secrets.ORACLE_SSH_KEY }}
+        source: "*.jar"
+        target: "~/biblioteca-api/"
+        strip_components: 1
+
+    - name: Setup and Start Service
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.ORACLE_HOST }}
+        username: ${{ secrets.ORACLE_USERNAME }}
+        key: ${{ secrets.ORACLE_SSH_KEY }}
+        script: |
+          # Criar arquivo de serviço systemd
+          sudo tee /etc/systemd/system/biblioteca-api.service << EOL
+          [Unit]
+          Description=Biblioteca API
+          After=network.target
+
+          [Service]
+          User=${{ secrets.ORACLE_USERNAME }}
+          WorkingDirectory=/home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api
+          EnvironmentFile=/home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/.env
+          ExecStart=/usr/bin/java -jar biblioteca-api.jar
+          SuccessExitStatus=143
+          TimeoutStopSec=10
+          Restart=on-failure
+          RestartSec=5
+
+          [Install]
+          WantedBy=multi-user.target
+          EOL
+          
+          # Recarregar systemd
+          sudo systemctl daemon-reload
+          
+          # Habilitar e iniciar serviço
+          sudo systemctl enable biblioteca-api
+          sudo systemctl start biblioteca-api

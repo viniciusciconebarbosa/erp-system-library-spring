@@ -1,28 +1,33 @@
 package com.biblioteca.erp_biblioteca.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.stereotype.Controller;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import java.util.HashMap;
+import java.util.Map;
 
-@Controller
-@Tag(name = "Home", description = "Endpoints de status da API")
+@RestController
 public class HomeController {
     
-    @GetMapping("/")
-    public ModelAndView home() {
-        return new ModelAndView("forward:/index.html");
-    }
-    
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @GetMapping("/health")
-    @ResponseBody
-    @Operation(
-        summary = "Verificação de saúde",
-        description = "Endpoint para health check da API"
-    )
-    public String health() {
-        return "OK";
+    public ResponseEntity<Map<String, String>> healthCheck() {
+        Map<String, String> status = new HashMap<>();
+        
+        try {
+            jdbcTemplate.queryForObject("SELECT 1", Integer.class);
+            status.put("database", "UP");
+            status.put("api", "UP");
+            return ResponseEntity.ok(status);
+        } catch (Exception e) {
+            status.put("database", "DOWN");
+            status.put("api", "UP");
+            status.put("error", e.getMessage());
+            return ResponseEntity.internalServerError().body(status);
+        }
     }
 }
