@@ -33,12 +33,20 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                    "/api/auth/**", 
-                    "/", 
-                    "/swagger-ui/**", 
-                    "/v3/api-docs/**", 
+                    "/api/auth/**",
+                    "/",
+                    "/index.html",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/v3/api-docs/**",
+                    "/api-docs/**",
                     "/health",
-                    "/api/livros/disponiveis"  // Adicionando esta rota como pública
+                    "/api/livros/disponiveis",
+                    // Recursos estáticos
+                    "/static/**",
+                    "/css/**",
+                    "/js/**",
+                    "/images/**"
                 ).permitAll()
                 .anyRequest().authenticated())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
