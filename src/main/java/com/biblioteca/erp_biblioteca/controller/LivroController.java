@@ -76,10 +76,9 @@ public class LivroController {
         return ResponseEntity.ok(livro);
     }
 
-    @GetMapping
+    @GetMapping // Rota pública
     public ResponseEntity<List<Livro>> listarLivros() {
-        List<Livro> livros = livroService.listarTodos();
-        return ResponseEntity.ok(livros);
+        return ResponseEntity.ok(livroService.listarTodos());
     }
 
     @GetMapping("/disponiveis")
@@ -88,24 +87,16 @@ public class LivroController {
         return ResponseEntity.ok(livrosDisponiveis);
     }
 
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Livro> atualizarLivro(
-            @PathVariable UUID id,
-            @Valid @RequestBody LivroDTO livroDTO) {
-        Livro livroAtualizado = livroService.atualizarLivro(id, livroDTO);
-        return ResponseEntity.ok(livroAtualizado);
+    @PutMapping("/{id}") // Rota protegida - ADMIN ou COMUM
+    @PreAuthorize("hasAnyRole('ADMIN', 'COMUM')")
+    public ResponseEntity<Livro> atualizarLivro(@PathVariable UUID id, @RequestBody LivroDTO livroDTO) {
+        return ResponseEntity.ok(livroService.atualizarLivro(id, livroDTO));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}") // Rota protegida - apenas ADMIN
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<DeleteResponse> deletarLivro(@PathVariable UUID id) {
+    public ResponseEntity<?> deletarLivro(@PathVariable UUID id) {
         livroService.deletarLivro(id);
-        DeleteResponse response = new DeleteResponse(
-                "Livro deletado com sucesso",
-                id.toString(),
-                "Livro"
-        );
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().build();
     }
 }
