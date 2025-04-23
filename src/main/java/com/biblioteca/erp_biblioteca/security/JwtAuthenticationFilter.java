@@ -29,43 +29,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String jwt = getJwtFromRequest(request);
 
             if (StringUtils.hasText(jwt)) {
-                if (tokenProvider.validateToken(jwt)) {
-                    String userId = tokenProvider.getUserIdFromToken(jwt);
-                    UserDetails userDetails = customUserDetailsService.loadUserById(userId);
-                    
-                    UsernamePasswordAuthenticationToken authentication = 
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                } else {
+                if (!tokenProvider.validateToken(jwt)) {
                     throw new UnauthorizedException();
                 }
-            } else if (isSecuredEndpoint(request)) {
-                throw new UnauthorizedException();
+                
+                String userId = tokenProvider.getUserIdFromToken(jwt);
+                UserDetails userDetails = customUserDetailsService.loadUserById(userId);
+                
+                UsernamePasswordAuthenticationToken authentication = 
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
+
+            filterChain.doFilter(request, response);
         } catch (Exception ex) {
             SecurityContextHolder.clearContext();
-            throw new UnauthorizedException();
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Token inválido ou expirado");
+            return;
         }
-
-        filterChain.doFilter(request, response);
-    }
-
-    private boolean isSecuredEndpoint(HttpServletRequest request) {
-        String path = request.getRequestURI();
-        return !path.startsWith("/api/auth/") && 
-               !path.equals("/") &&
-               !path.equals("/health") &&
-               !path.startsWith("/swagger-ui/") &&
-               !path.startsWith("/v3/api-docs") &&
-               !path.startsWith("/api-docs") &&
-               !path.equals("/index.html") &&
-               !path.startsWith("/static/") &&
-               !path.startsWith("/css/") &&
-               !path.startsWith("/js/") &&
-               !path.startsWith("/images/") &&
-               !path.startsWith("/api/livros/disponiveis");
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {

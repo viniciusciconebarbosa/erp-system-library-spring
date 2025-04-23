@@ -134,42 +134,4 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiError);
     }
 
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ApiError> handleUnauthorized(UnauthorizedException ex) {
-        ApiError apiError = new ApiError(
-            HttpStatus.UNAUTHORIZED.value(),
-            ex.getMessage(),
-            LocalDateTime.now(),
-            null
-        );
-        
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiError);
-    }
-
-    @ExceptionHandler({AccessDeniedException.class})
-    public ResponseEntity<ApiError> handleAccessDenied(AccessDeniedException ex) {
-        Map<String, String> details = new HashMap<>();
-        details.put("detail", "Você não tem permissão para acessar este recurso");
-        
-        ApiError apiError = new ApiError(
-            HttpStatus.FORBIDDEN.value(),
-            "Acesso negado",
-            LocalDateTime.now(),
-            details
-        );
-        
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
-    }
-
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ApiError> handleAuthenticationException(AuthenticationException ex) {
-        ApiError apiError = new ApiError(
-            HttpStatus.UNAUTHORIZED.value(),
-            "Falha na autenticação: " + ex.getMessage(),
-            LocalDateTime.now(),
-            null
-        );
-        
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiError);
-    }
 }
