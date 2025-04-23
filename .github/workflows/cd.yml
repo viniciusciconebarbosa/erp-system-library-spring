@@ -26,6 +26,7 @@ jobs:
         host: ${{ secrets.ORACLE_HOST }}
         username: ${{ secrets.ORACLE_USERNAME }}
         key: ${{ secrets.ORACLE_SSH_KEY }}
+        port: 22
         script: |
           mkdir -p ~/biblioteca-api
           sudo systemctl stop biblioteca-api || true
@@ -45,6 +46,7 @@ jobs:
         host: ${{ secrets.ORACLE_HOST }}
         username: ${{ secrets.ORACLE_USERNAME }}
         key: ${{ secrets.ORACLE_SSH_KEY }}
+        port: 22
         source: "*.jar"
         target: "~/biblioteca-api/"
         strip_components: 1
@@ -55,6 +57,7 @@ jobs:
         host: ${{ secrets.ORACLE_HOST }}
         username: ${{ secrets.ORACLE_USERNAME }}
         key: ${{ secrets.ORACLE_SSH_KEY }}
+        port: 22
         script: |
           sudo tee /etc/systemd/system/biblioteca-api.service << EOL
           [Unit]
