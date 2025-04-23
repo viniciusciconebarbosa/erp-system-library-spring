@@ -27,21 +27,44 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String jwt = getJwtFromRequest(request);
 
-            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-                String userId = tokenProvider.getUserIdFromToken(jwt);
-                UserDetails userDetails = customUserDetailsService.loadUserById(userId);
-                
-                UsernamePasswordAuthenticationToken authentication = 
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            if (StringUtils.hasText(jwt)) {
+                if (tokenProvider.validateToken(jwt)) {
+                    String userId = tokenProvider.getUserIdFromToken(jwt);
+                    UserDetails userDetails = customUserDetailsService.loadUserById(userId);
+                    
+                    UsernamePasswordAuthenticationToken authentication = 
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else {
+                    throw new UnauthorizedException();
+                }
+            } else if (isSecuredEndpoint(request)) {
+                throw new UnauthorizedException();
             }
         } catch (Exception ex) {
-            logger.error("Could not set user authentication in security context", ex);
+            SecurityContextHolder.clearContext();
+            throw new UnauthorizedException();
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isSecuredEndpoint(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return !path.startsWith("/api/auth/") && 
+               !path.equals("/") &&
+               !path.equals("/health") &&
+               !path.startsWith("/swagger-ui/") &&
+               !path.startsWith("/v3/api-docs") &&
+               !path.startsWith("/api-docs") &&
+               !path.equals("/index.html") &&
+               !path.startsWith("/static/") &&
+               !path.startsWith("/css/") &&
+               !path.startsWith("/js/") &&
+               !path.startsWith("/images/") &&
+               !path.startsWith("/api/livros/disponiveis");
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {
