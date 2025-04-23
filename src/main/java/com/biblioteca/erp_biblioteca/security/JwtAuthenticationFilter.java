@@ -1,5 +1,6 @@
 package com.biblioteca.erp_biblioteca.security;
 
+import com.biblioteca.erp_biblioteca.exception.UnauthorizedException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
