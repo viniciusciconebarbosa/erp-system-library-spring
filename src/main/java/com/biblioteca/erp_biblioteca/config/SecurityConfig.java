@@ -17,8 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import java.time.LocalDateTime;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -27,10 +26,12 @@ import java.time.LocalDateTime;
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailsService customUserDetailsService;
+    private final CorsFilter corsFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .cors(cors -> {})  // Habilita CORS
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -45,7 +46,6 @@ public class SecurityConfig {
                     "/api-docs/**",
                     "/health",
                     "/api/livros/disponiveis",
-                    // Recursos estáticos
                     "/static/**",
                     "/css/**",
                     "/js/**",
@@ -57,14 +57,15 @@ public class SecurityConfig {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.setContentType("application/json");
                     response.getWriter().write("{\"status\":401,\"message\":\"Acesso não autorizado. Por favor, faça login.\",\"timestamp\":\"" 
-                        + LocalDateTime.now() + "\"}");
+                        + java.time.LocalDateTime.now() + "\"}");
                 })
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     response.setContentType("application/json");
                     response.getWriter().write("{\"status\":403,\"message\":\"Acesso negado. Você não tem permissão para acessar este recurso.\",\"timestamp\":\"" 
-                        + LocalDateTime.now() + "\"}");
+                        + java.time.LocalDateTime.now() + "\"}");
                 }))
+            .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         
         return http.build();

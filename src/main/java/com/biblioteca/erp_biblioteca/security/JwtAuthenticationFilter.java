@@ -1,11 +1,11 @@
 package com.biblioteca.erp_biblioteca.security;
 
-import com.biblioteca.erp_biblioteca.exception.UnauthorizedException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,8 +13,10 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -28,11 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String jwt = getJwtFromRequest(request);
 
-            if (StringUtils.hasText(jwt)) {
-                if (!tokenProvider.validateToken(jwt)) {
-                    throw new UnauthorizedException();
-                }
-                
+            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
                 String userId = tokenProvider.getUserIdFromToken(jwt);
                 UserDetails userDetails = customUserDetailsService.loadUserById(userId);
                 
@@ -45,10 +43,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (Exception ex) {
+            log.error("Não foi possível autenticar o usuário", ex);
             SecurityContextHolder.clearContext();
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Token inválido ou expirado");
-            return;
+            filterChain.doFilter(request, response); // Permite que a exceção seja tratada pelo SecurityConfig
         }
     }
 
