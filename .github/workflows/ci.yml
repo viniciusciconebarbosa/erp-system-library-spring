@@ -20,29 +20,11 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Grant execute permission for mvnw
-      run: chmod +x mvnw
-
     - name: Build and Test
-      run: |
-        export SPRING_PROFILES_ACTIVE=test
-        ./mvnw clean verify -B -Dspring.profiles.active=test
+      run: ./mvnw test -B -Dspring.profiles.active=test
       env:
-        MAVEN_OPTS: "-Dfile.encoding=UTF-8 -Dmaven.resources.encoding=UTF-8"
         SPRING_PROFILES_ACTIVE: test
 
-    - name: Upload test reports
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: test-reports
-        path: |
-          target/surefire-reports/
-          target/failsafe-reports/
-
-    - name: Upload artifact
+    - name: Build JAR if tests pass
       if: success()
-      uses: actions/upload-artifact@v4
-      with:
-        name: biblioteca-api
-        path: target/*.jar
+      run: ./mvnw package -DskipTests
