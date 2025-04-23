@@ -20,11 +20,13 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();
         
-        // Se configurado como "*", permite qualquer origem
+        // Se configurado como "*", permite qualquer origem usando pattern
         if (allowedOrigins.contains("*")) {
             corsConfig.addAllowedOriginPattern("*");
+            corsConfig.setAllowCredentials(false); // Deve ser false quando usar "*"
         } else {
             corsConfig.setAllowedOrigins(allowedOrigins);
+            corsConfig.setAllowCredentials(true);
         }
         
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
@@ -38,7 +40,6 @@ public class CorsConfig {
             "Access-Control-Request-Headers"
         ));
         
-        corsConfig.setAllowCredentials(true);
         corsConfig.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
