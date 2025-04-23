@@ -20,6 +20,9 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
+    - name: Grant execute permission for mvnw
+      run: chmod +x mvnw
+
     - name: Build and Test
       run: ./mvnw test -B -Dspring.profiles.active=test
       env:
