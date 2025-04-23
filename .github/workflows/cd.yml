@@ -13,9 +13,12 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
-    - uses: actions/download-artifact@v4  # Atualizado para v4
+    - name: Download JAR
+      uses: actions/download-artifact@v4
       with:
         name: biblioteca-api
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        run-id: ${{ github.event.workflow_run.id }}
 
     - name: Deploy to Oracle Cloud
       uses: appleboy/ssh-action@master
@@ -24,13 +27,9 @@ jobs:
         username: ${{ secrets.ORACLE_USERNAME }}
         key: ${{ secrets.ORACLE_SSH_KEY }}
         script: |
-          # Criar diretório se não existir
           mkdir -p ~/biblioteca-api
-          
-          # Parar serviço existente
           sudo systemctl stop biblioteca-api || true
           
-          # Criar arquivo .env usando secrets
           cat > ~/biblioteca-api/.env << EOL
           DB_URL=jdbc:mysql://${{ secrets.DB_HOST }}:3306/erp_biblioteca?createDatabaseIfNotExist=true
           DB_USER=${{ secrets.DB_USER }}
@@ -57,7 +56,6 @@ jobs:
         username: ${{ secrets.ORACLE_USERNAME }}
         key: ${{ secrets.ORACLE_SSH_KEY }}
         script: |
-          # Criar arquivo de serviço systemd
           sudo tee /etc/systemd/system/biblioteca-api.service << EOL
           [Unit]
           Description=Biblioteca API
@@ -77,9 +75,6 @@ jobs:
           WantedBy=multi-user.target
           EOL
           
-          # Recarregar systemd
           sudo systemctl daemon-reload
-          
-          # Habilitar e iniciar serviço
           sudo systemctl enable biblioteca-api
           sudo systemctl start biblioteca-api

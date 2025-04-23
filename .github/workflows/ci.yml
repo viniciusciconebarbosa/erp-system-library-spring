@@ -28,6 +28,13 @@ jobs:
       env:
         SPRING_PROFILES_ACTIVE: test
 
-    - name: Build JAR if tests pass
+    - name: Build JAR
       if: success()
       run: ./mvnw package -DskipTests
+
+    - name: Upload JAR artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: biblioteca-api
+        path: target/*.jar
+        retention-days: 1
