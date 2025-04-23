@@ -13,71 +13,87 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
-    - name: Download JAR
-      uses: actions/download-artifact@v4
-      with:
-        name: biblioteca-api
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        run-id: ${{ github.event.workflow_run.id }}
+      - name: Download JAR
+        uses: actions/download-artifact@v4
+        with:
+          name: biblioteca-api
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
 
-    - name: Deploy to Oracle Cloud
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.ORACLE_HOST }}
-        username: ${{ secrets.ORACLE_USERNAME }}
-        key: ${{ secrets.ORACLE_SSH_KEY }}
-        port: 22
-        script: |
-          mkdir -p ~/biblioteca-api
-          sudo systemctl stop biblioteca-api || true
-          
-          cat > ~/biblioteca-api/.env << EOL
-          DB_URL=jdbc:mysql://${{ secrets.DB_HOST }}:3306/erp_biblioteca?createDatabaseIfNotExist=true
-          DB_USER=${{ secrets.DB_USER }}
-          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
-          JWT_EXPIRATION=${{ secrets.JWT_EXPIRATION }}
-          SPRING_PROFILES_ACTIVE=prod
-          EOL
+      - name: Debug Downloaded Files
+        run: |
+          echo "Listing downloaded files in the workflow directory:"
+          ls -la
 
-    - name: Copy JAR to server
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.ORACLE_HOST }}
-        username: ${{ secrets.ORACLE_USERNAME }}
-        key: ${{ secrets.ORACLE_SSH_KEY }}
-        port: 22
-        source: "*.jar"
-        target: "~/biblioteca-api/"
-        strip_components: 1
+      - name: Deploy to Oracle Cloud
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ${{ secrets.ORACLE_USERNAME }}
+          key: ${{ secrets.ORACLE_SSH_KEY }}
+          port: 22
+          script: |
+            mkdir -p /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api
+            sudo systemctl stop biblioteca-api || true
+            
+            cat > /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/.env << EOL
+            DB_URL=jdbc:mysql://${{ secrets.DB_HOST }}:3306/erp_biblioteca?createDatabaseIfNotExist=true
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_EXPIRATION=${{ secrets.JWT_EXPIRATION }}
+            SPRING_PROFILES_ACTIVE=prod
+            EOL
 
-    - name: Setup and Start Service
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.ORACLE_HOST }}
-        username: ${{ secrets.ORACLE_USERNAME }}
-        key: ${{ secrets.ORACLE_SSH_KEY }}
-        port: 22
-        script: |
-          sudo tee /etc/systemd/system/biblioteca-api.service << EOL
-          [Unit]
-          Description=Biblioteca API
-          After=network.target
+      - name: Copy JAR to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ${{ secrets.ORACLE_USERNAME }}
+          key: ${{ secrets.ORACLE_SSH_KEY }}
+          port: 22
+          source: "*.jar"
+          target: "/home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/"
 
-          [Service]
-          User=${{ secrets.ORACLE_USERNAME }}
-          WorkingDirectory=/home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api
-          EnvironmentFile=/home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/.env
-          ExecStart=/usr/bin/java -jar biblioteca-api.jar
-          SuccessExitStatus=143
-          TimeoutStopSec=10
-          Restart=on-failure
-          RestartSec=5
+      - name: Rename JAR on Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ${{ secrets.ORACLE_USERNAME }}
+          key: ${{ secrets.ORACLE_SSH_KEY }}
+          port: 22
+          script: |
+            mv /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/*.jar /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/biblioteca-api.jar || true
+            echo "Listing files in /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api after rename:"
+            ls -la /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api
 
-          [Install]
-          WantedBy=multi-user.target
-          EOL
-          
-          sudo systemctl daemon-reload
-          sudo systemctl enable biblioteca-api
-          sudo systemctl start biblioteca-api
+      - name: Setup and Start Service
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ${{ secrets.ORACLE_USERNAME }}
+          key: ${{ secrets.ORACLE_SSH_KEY }}
+          port: 22
+          script: |
+            sudo tee /etc/systemd/system/biblioteca-api.service << EOL
+            [Unit]
+            Description=Biblioteca API
+            After=network.target
+            
+            [Service]
+            User=${{ secrets.ORACLE_USERNAME }}
+            WorkingDirectory=/home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api
+            EnvironmentFile=/home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/.env
+            ExecStart=/usr/bin/java -jar biblioteca-api.jar
+            SuccessExitStatus=143
+            TimeoutStopSec=10
+            Restart=on-failure
+            RestartSec=5
+            
+            [Install]
+            WantedBy=multi-user.target
+            EOL
+            
+            sudo systemctl daemon-reload
+            sudo systemctl enable biblioteca-api
+            sudo systemctl start biblioteca-api
