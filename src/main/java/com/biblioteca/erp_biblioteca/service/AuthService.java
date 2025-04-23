@@ -35,7 +35,6 @@ public class AuthService {
 
         Usuario usuario = usuarioRepository.findByEmail(loginDTO.getEmail())
             .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
         String token = tokenProvider.generateToken(usuario);
 
         Map<String, Object> response = new HashMap<>();
