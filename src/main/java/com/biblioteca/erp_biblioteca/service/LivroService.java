@@ -35,14 +35,15 @@ public class LivroService {
         Usuario doador = null;
         if (livroDTO.getDoadorId() != null) {
             doador = usuarioRepository.findById(livroDTO.getDoadorId())
-                .orElseThrow(() -> new RuntimeException("ID do doador informado não existe"));
+                .orElseThrow(() -> new BusinessException("ID do doador informado não existe"));
         }
 
         // Cria e salva o livro
         Livro livro = Livro.builder()
             .titulo(livroDTO.getTitulo())
+            .autor(livroDTO.getAutor())
             .genero(livroDTO.getGenero())
-            .capaFoto(filename != null ? storageService.getFileUrl(filename) : null)
+            .capaFoto(filename != null ? "/uploads/capas/" + filename : null)
             .classificacaoEtaria(livroDTO.getClassificacaoEtaria())
             .estadoConservacao(livroDTO.getEstadoConservacao())
             .doador(doador)
