@@ -7,7 +7,7 @@ o projeto visa melhorar minhas habilidades em desenvolvimento de software.
 
 ## Funcionalidades
 - Cadastrar livros ou realizar doações.
-- Gerir Usuarios no sistema.
+- Gerenciar Usuarios no sistema.
 - Buscar livros por título ou autor.
 - Registrar locaçoes com atualização automática do estoque.
 - Interface responsiva e intuitiva para desktop e celular.
