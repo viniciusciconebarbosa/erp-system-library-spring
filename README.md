@@ -6,7 +6,8 @@ Este é um projeto ERP web e android para gerenciar o estoque de uma biblioteca,
 o projeto visa melhorar minhas habilidades em desenvolvimento de software.
 
 ## Funcionalidades
-- Cadastrar livros doados.
+- Cadastrar livros ou realizar doações.
+- Gerir Usuarios no sistema.
 - Buscar livros por título ou autor.
 - Registrar locaçoes com atualização automática do estoque.
 - Interface responsiva e intuitiva para desktop e celular.
