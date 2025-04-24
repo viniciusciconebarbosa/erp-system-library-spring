@@ -14,6 +14,7 @@ CREATE TABLE usuarios (
 CREATE TABLE livros (
     id BINARY(16) NOT NULL,
     titulo VARCHAR(255) NOT NULL,
+    autor VARCHAR(255) NOT NULL,
     genero VARCHAR(50),
     capa_foto VARCHAR(255),
     disponivel_locacao BOOLEAN NOT NULL DEFAULT TRUE,

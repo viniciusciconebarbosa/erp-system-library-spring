@@ -45,6 +45,7 @@ public class SecurityConfig {
                     "/v3/api-docs/**",
                     "/api-docs/**",
                     "/health",
+                    "/api/livros",           // Adicionando GET /api/livros
                     "/api/livros/disponiveis",
                     "/static/**",
                     "/css/**",

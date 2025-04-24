@@ -21,6 +21,8 @@ public class Livro {
     private UUID id;
 
     private String titulo;
+    
+    private String autor;
 
     @Enumerated(EnumType.STRING)
     private Genero genero;

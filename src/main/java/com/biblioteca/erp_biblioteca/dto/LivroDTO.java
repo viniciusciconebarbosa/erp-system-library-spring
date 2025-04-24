@@ -17,6 +17,10 @@ public class LivroDTO {
     @Size(min = 2, max = 255, message = "Título deve ter entre 2 e 255 caracteres")
     private String titulo;
 
+    @NotBlank(message = "Autor é obrigatório")
+    @Size(min = 2, max = 255, message = "Autor deve ter entre 2 e 255 caracteres")
+    private String autor;
+
     @NotNull(message = "Valores aceitos: [FICCAO, NAO_FICCAO, TERROR, ROMANCE, EDUCACAO, TECNICO]")
     private Genero genero;
 
