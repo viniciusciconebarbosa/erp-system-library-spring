@@ -6,7 +6,8 @@ Este é um projeto ERP web e android para gerenciar o estoque de uma biblioteca,
 o projeto visa melhorar minhas habilidades em desenvolvimento de software.
 
 ## Funcionalidades
-- Cadastrar livros doados.
+- Cadastrar livros ou realizar doações.
+- Gerenciar Usuarios no sistema.
 - Buscar livros por título ou autor.
 - Registrar locaçoes com atualização automática do estoque.
 - Interface responsiva e intuitiva para desktop e celular.
@@ -30,3 +31,7 @@ O sistema segue uma arquitetura cliente-servidor:
 - **Front-end**: Next.js faz requisições HTTP à API.
 - **Back-end**: Spring Boot gerencia lógica.
 - **Banco**: armazena tabelas de livros e vendas.
+
+##Doc
+![swagger](https://github.com/user-attachments/assets/08bcaa53-d932-4d6c-ab99-5dff8278e043)
+
