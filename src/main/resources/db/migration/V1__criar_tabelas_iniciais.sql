@@ -21,6 +21,7 @@ CREATE TABLE livros (
     classificacao_etaria VARCHAR(50),
     estado_conservacao VARCHAR(50),
     doador_id BINARY(16),
+    sinopse TEXT,
     PRIMARY KEY (id),
     CONSTRAINT fk_doador FOREIGN KEY (doador_id) REFERENCES usuarios(id),
     CONSTRAINT check_genero CHECK (genero IN ('FICCAO', 'NAO_FICCAO', 'TERROR', 'ROMANCE', 'EDUCACAO', 'TECNICO'))

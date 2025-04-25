@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -21,7 +20,7 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
+// @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -31,11 +30,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> {})  // Habilita CORS
+            .cors(cors -> {})
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/**").permitAll()  
                 .requestMatchers(
                     "/api/auth/**",
                     "/",
@@ -45,27 +45,29 @@ public class SecurityConfig {
                     "/v3/api-docs/**",
                     "/api-docs/**",
                     "/health",
-                    "/api/livros",           // Adicionando GET /api/livros
+                    "/api/livros",          
                     "/api/livros/disponiveis",
                     "/static/**",
                     "/css/**",
                     "/js/**",
-                    "/images/**"
-                ).permitAll()
-                .anyRequest().authenticated())
-            .exceptionHandling(ex -> ex
-                .authenticationEntryPoint((request, response, authException) -> {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.setContentType("application/json");
-                    response.getWriter().write("{\"status\":401,\"message\":\"Acesso não autorizado. Por favor, faça login.\",\"timestamp\":\"" 
-                        + java.time.LocalDateTime.now() + "\"}");
-                })
-                .accessDeniedHandler((request, response, accessDeniedException) -> {
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    response.setContentType("application/json");
-                    response.getWriter().write("{\"status\":403,\"message\":\"Acesso negado. Você não tem permissão para acessar este recurso.\",\"timestamp\":\"" 
-                        + java.time.LocalDateTime.now() + "\"}");
-                }))
+                    "/images/**",
+                    "/uploads/**"
+                ).permitAll().anyRequest().permitAll()
+                // .anyRequest().authenticated()
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"status\":401,\"message\":\"Acesso não autorizado. Por favor, faça login.\",\"timestamp\":\""
+                                    + java.time.LocalDateTime.now() + "\"}");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"status\":403,\"message\":\"Acesso negado. Você não tem permissão para acessar este recurso.\",\"timestamp\":\""
+                                    + java.time.LocalDateTime.now() + "\"}");
+                        }))
             .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         

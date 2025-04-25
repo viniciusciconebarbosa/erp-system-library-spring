@@ -3,7 +3,6 @@ package com.biblioteca.erp_biblioteca.dto;
 import com.biblioteca.erp_biblioteca.enums.ClassificacaoEtaria;
 import com.biblioteca.erp_biblioteca.enums.EstadoConservacao;
 import com.biblioteca.erp_biblioteca.enums.Genero;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -25,6 +24,9 @@ public class LivroDTO {
     private Genero genero;
 
     private String capaFoto;
+
+    @Size(max = 2000, message = "Sinopse deve ter no máximo 2000 caracteres")
+    private String sinopse;
 
     @NotNull(message = "Valores aceitos: [LIVRE, DOZE_ANOS, QUATORZE_ANOS, DEZESSEIS_ANOS, DEZOITO_ANOS]")
     private ClassificacaoEtaria classificacaoEtaria;
