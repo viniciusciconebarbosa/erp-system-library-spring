@@ -86,7 +86,7 @@ class LivroServiceTest {
         assertEquals(livroDTO.getTitulo(), livro.getTitulo());
         assertEquals(doador, livro.getDoador());
         assertTrue(livro.isDisponivelLocacao());
-        assertEquals("/uploads/capas/capa.jpg", livro.getCapaFoto());
+        assertEquals("capa.jpg", livro.getCapaFoto()); // Removida a parte do caminho
     }
 
     @Test
