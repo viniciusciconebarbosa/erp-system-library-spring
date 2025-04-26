@@ -19,15 +19,9 @@ public class CorsConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-
-        if (allowedOrigins.contains("*")) {
-            corsConfig.addAllowedOriginPattern("*");
-            corsConfig.setAllowCredentials(false);
-        } else {
-            corsConfig.setAllowedOrigins(allowedOrigins);
-            corsConfig.setAllowCredentials(true);
-        }
         
+        corsConfig.setAllowedOrigins(allowedOrigins);
+        corsConfig.setAllowCredentials(true);
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         corsConfig.setAllowedHeaders(Arrays.asList(
             "Origin",
@@ -36,7 +30,8 @@ public class CorsConfig {
             "Authorization",
             "Access-Control-Allow-Origin",
             "Access-Control-Request-Method",
-            "Access-Control-Request-Headers"
+            "Access-Control-Request-Headers",
+            "Access-Control-Allow-Credentials"
         ));
         
         corsConfig.setMaxAge(3600L);
