@@ -2,7 +2,7 @@ name: CD
 
 on:
   workflow_run:
-    workflows: [ "CI" ]
+    workflows: ["CI"]
     types:
       - completed
     branches: [ master ]
@@ -13,6 +13,9 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Download JAR
         uses: actions/download-artifact@v4
         with:
@@ -20,16 +23,10 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
 
-
-      - name: Clean existing uploads directory on server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.ORACLE_HOST }}
-          username: ${{ secrets.ORACLE_USERNAME }}
-          key: ${{ secrets.ORACLE_SSH_KEY }}
-          port: 22
-          script: |
-            rm -rf /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/uploads || true
+      - name: Debug Downloaded Files
+        run: |
+          echo "Listing downloaded files in the workflow directory:"
+          ls -la
 
       - name: Prepare uploads directory on server
         uses: appleboy/ssh-action@master
@@ -39,24 +36,26 @@ jobs:
           key: ${{ secrets.ORACLE_SSH_KEY }}
           port: 22
           script: |
-              mkdir -p /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/uploads/capas
-              chmod -R 755 /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/uploads
+            mkdir -p /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/uploads/capas
+            chmod -R 755 /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/uploads
+
+      - name: Debug local files
+        run: |
+          echo "Current directory contents:"
+          ls -la
+          echo "Uploads directory contents (if exists):"
+          ls -la uploads/capas || echo "uploads/capas directory not found"
 
       - name: Copy initial images to server
         uses: appleboy/scp-action@master
         with:
-            host: ${{ secrets.ORACLE_HOST }}
-            username: ${{ secrets.ORACLE_USERNAME }}
-            key: ${{ secrets.ORACLE_SSH_KEY }}
-            port: 22
-            source: "uploads/capas/*"
-            target: "/home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/uploads/capas/"
-            strip_components: 2
-
-      - name: Debug Downloaded Files
-        run: |
-          echo "Listing downloaded files in the workflow directory:"
-          ls -la
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ${{ secrets.ORACLE_USERNAME }}
+          key: ${{ secrets.ORACLE_SSH_KEY }}
+          port: 22
+          source: "uploads/capas/"
+          target: "/home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/uploads/"
+          strip_components: 1
 
       - name: Deploy to Oracle Cloud
         uses: appleboy/ssh-action@master
