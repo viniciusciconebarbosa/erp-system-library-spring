@@ -13,15 +13,25 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Download JAR
         uses: actions/download-artifact@v4
         with:
           name: biblioteca-api
+          path: target/
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Debug Downloaded Files
+        run: |
+          echo "Listing downloaded files in the workflow directory:"
+          ls -la
+          echo "Listing target directory:"
+          ls -la target/ || true
+          echo "Checking for JAR files:"
+          find . -name "*.jar" -type f || echo "No JAR files found"
 
       - name: Copy initial images to server
         uses: appleboy/scp-action@master
@@ -34,12 +44,30 @@ jobs:
           target: "/home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/uploads/capas/"
           strip_components: 2
 
-      - name: Debug Downloaded Files
+      - name: Locate and prepare JAR
         run: |
-          echo "Listing downloaded files in the workflow directory:"
-          ls -la
+          echo "Locating JAR file..."
+          find . -name "*.jar" -type f
+          mkdir -p dist
+          if find target -name "*.jar" -type f | grep .; then
+            find target -name "*.jar" -type f -exec cp {} dist/biblioteca-api.jar \;
+            ls -la dist/
+          else
+            echo "Error: No JAR file found in target/"
+            exit 1
+          fi
 
-      - name: Deploy to Oracle Cloud
+      - name: Copy JAR to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ${{ secrets.ORACLE_USERNAME }}
+          key: ${{ secrets.ORACLE_SSH_KEY }}
+          port: 22
+          source: "dist/biblioteca-api.jar"
+          target: "/home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/"
+
+      - name: Setup permissions and verify JAR
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.ORACLE_HOST }}
@@ -47,10 +75,19 @@ jobs:
           key: ${{ secrets.ORACLE_SSH_KEY }}
           port: 22
           script: |
-            mkdir -p /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api
+            if [ -f /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/biblioteca-api.jar ]; then
+              echo "JAR file found"
+              sudo chown ${{ secrets.ORACLE_USERNAME }}:${{ secrets.ORACLE_USERNAME }} /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/biblioteca-api.jar
+              sudo chmod 755 /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/biblioteca-api.jar
+              ls -la /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api
+            else
+              echo "Error: JAR file not found in /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api"
+              exit 1
+            fi
             mkdir -p /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/uploads/capas
+            sudo chown -R ${{ secrets.ORACLE_USERNAME }}:${{ secrets.ORACLE_USERNAME }} /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/uploads
+            sudo chmod -R 755 /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/uploads
             sudo systemctl stop biblioteca-api || true
-            
             cat > /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/.env << EOL
             DB_URL=jdbc:mysql://${{ secrets.DB_HOST }}:3306/erp_biblioteca?createDatabaseIfNotExist=true
             DB_USER=${{ secrets.DB_USER }}
@@ -60,27 +97,9 @@ jobs:
             SPRING_PROFILES_ACTIVE=prod
             EOL
 
-      - name: Copy JAR to server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.ORACLE_HOST }}
-          username: ${{ secrets.ORACLE_USERNAME }}
-          key: ${{ secrets.ORACLE_SSH_KEY }}
-          port: 22
-          source: "*.jar"
-          target: "/home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/"
-
-      - name: Rename JAR on Server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.ORACLE_HOST }}
-          username: ${{ secrets.ORACLE_USERNAME }}
-          key: ${{ secrets.ORACLE_SSH_KEY }}
-          port: 22
-          script: |
-            mv /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/*.jar /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/biblioteca-api.jar || true
-            echo "Listing files in /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api after rename:"
-            ls -la /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api
+      - name: Validate Flyway Migrations
+        run: |
+          mvn flyway:validate -Dflyway.url=jdbc:mysql://${{ secrets.DB_HOST }}:3306/erp_biblioteca -Dflyway.user=${{ secrets.DB_USER }} -Dflyway.password=${{ secrets.DB_PASSWORD }}
 
       - name: Setup and Start Service
         uses: appleboy/ssh-action@master
@@ -99,7 +118,7 @@ jobs:
             User=${{ secrets.ORACLE_USERNAME }}
             WorkingDirectory=/home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api
             EnvironmentFile=/home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/.env
-            ExecStart=/usr/bin/java -jar biblioteca-api.jar
+            ExecStart=/usr/bin/java -jar /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/biblioteca-api.jar
             SuccessExitStatus=143
             TimeoutStopSec=10
             Restart=on-failure
@@ -112,6 +131,19 @@ jobs:
             sudo systemctl daemon-reload
             sudo systemctl enable biblioteca-api
             sudo systemctl start biblioteca-api
-            
-            # Ajustar permissões da pasta de uploads
-            chmod -R 755 /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/uploads
+
+      - name: Verify Service Status and Logs
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ${{ secrets.ORACLE_USERNAME }}
+          key: ${{ secrets.ORACLE_SSH_KEY }}
+          port: 22
+          script: |
+            sleep 10
+            sudo systemctl status biblioteca-api || true
+            journalctl -u biblioteca-api.service --since "10 minutes ago" || true
+            if ! systemctl is-active --quiet biblioteca-api; then
+              echo "Service failed to start"
+              exit 1
+            fi
