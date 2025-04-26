@@ -72,7 +72,6 @@ class LivroServiceTest {
         // Given
         when(usuarioRepository.findById(livroDTO.getDoadorId())).thenReturn(Optional.of(doador));
         when(storageService.store(any())).thenReturn("capa.jpg");
-        when(storageService.getFileUrl(any())).thenReturn("http://localhost/images/capa.jpg");
         when(livroRepository.save(any())).thenAnswer(i -> {
             Livro l = (Livro) i.getArguments()[0];
             l.setId(UUID.randomUUID());
@@ -87,7 +86,7 @@ class LivroServiceTest {
         assertEquals(livroDTO.getTitulo(), livro.getTitulo());
         assertEquals(doador, livro.getDoador());
         assertTrue(livro.isDisponivelLocacao());
-        assertEquals("http://localhost/images/capa.jpg", livro.getCapaFoto());
+        assertEquals("/uploads/capas/capa.jpg", livro.getCapaFoto());
     }
 
     @Test
