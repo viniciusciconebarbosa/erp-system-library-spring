@@ -38,11 +38,5 @@ build/
 ### VS Code ###
 .vscode/
 
-# Ignorar uploads exceto as imagens iniciais
-uploads/*
-!uploads/capas/
-uploads/capas/*
-!uploads/capas/*.jpg
-!uploads/capas/*.png
-!uploads/capas/*.gif
-!uploads/capas/*.webp
+
+
