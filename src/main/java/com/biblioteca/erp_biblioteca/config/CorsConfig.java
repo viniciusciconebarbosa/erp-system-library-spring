@@ -19,11 +19,10 @@ public class CorsConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        
-        // Se configurado como "*", permite qualquer origem usando pattern
+
         if (allowedOrigins.contains("*")) {
             corsConfig.addAllowedOriginPattern("*");
-            corsConfig.setAllowCredentials(false); // Deve ser false quando usar "*"
+            corsConfig.setAllowCredentials(false);
         } else {
             corsConfig.setAllowedOrigins(allowedOrigins);
             corsConfig.setAllowCredentials(true);
