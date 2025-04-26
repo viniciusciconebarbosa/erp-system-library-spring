@@ -1,6 +1,7 @@
 package com.biblioteca.erp_biblioteca.service;
 
 import com.biblioteca.erp_biblioteca.dto.LivroDTO;
+import com.biblioteca.erp_biblioteca.dto.LivroResumoDTO;
 import com.biblioteca.erp_biblioteca.exception.BusinessException;
 import com.biblioteca.erp_biblioteca.model.Livro;
 import com.biblioteca.erp_biblioteca.model.Usuario;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import com.biblioteca.erp_biblioteca.service.storage.StorageService;
-
+import com.biblioteca.erp_biblioteca.config.StorageConfig;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,9 +20,11 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class LivroService {
-    private final LivroRepository livroRepository;
-    private final UsuarioRepository usuarioRepository;
+
     private final StorageService storageService;
+    private final UsuarioRepository usuarioRepository;
+    private final LivroRepository livroRepository;
+    private final StorageConfig storageConfig;
 
     @Transactional
     public Livro cadastrarLivro(LivroDTO livroDTO, MultipartFile capaFile) {
@@ -43,7 +46,7 @@ public class LivroService {
             .titulo(livroDTO.getTitulo())
             .autor(livroDTO.getAutor())
             .genero(livroDTO.getGenero())
-            .capaFoto(filename != null ? "/uploads/capas/" + filename : null)
+            .capaFoto(filename)
             .classificacaoEtaria(livroDTO.getClassificacaoEtaria())
             .estadoConservacao(livroDTO.getEstadoConservacao())
             .doador(doador)
@@ -55,10 +58,6 @@ public class LivroService {
 
     public List<Livro> listarTodos() {
         return livroRepository.findAll();
-    }
-
-    public List<Livro> listarDisponiveis() {
-        return livroRepository.findByDisponivelLocacaoTrue();
     }
 
     public Livro atualizarLivro(UUID id, LivroDTO livroDTO) {
@@ -97,5 +96,17 @@ public class LivroService {
         }
 
         livroRepository.deleteById(id);
+    }
+
+    public List<LivroResumoDTO> listarTodosResumido() {
+        List<LivroResumoDTO> livros = livroRepository.findAllResumido();
+        livros.forEach(livro -> livro.setCapaFoto(storageConfig.getFullImageUrl(livro.getCapaFoto())));
+        return livros;
+    }
+
+    public List<LivroResumoDTO> listarDisponiveisResumido() {
+        List<LivroResumoDTO> livros = livroRepository.findDisponiveisResumido();
+        livros.forEach(livro -> livro.setCapaFoto(storageConfig.getFullImageUrl(livro.getCapaFoto())));
+        return livros;
     }
 }

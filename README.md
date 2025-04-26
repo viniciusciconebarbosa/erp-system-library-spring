@@ -1,7 +1,7 @@
 
 # ERP Controle de estoque - Biblioteca comunitaria
 
-link: https://minha1api.duckdns.org/
+https://minha1api.duckdns.org/
 
 ## Sobre o Projeto
 Este é um projeto ERP web e android para gerenciar o estoque de uma biblioteca, permitindo cadastrar um livro doado, busca livros em estoque e tambem livros locados. Será Desenvolvido em Java (Spring Boot) e Next.js,

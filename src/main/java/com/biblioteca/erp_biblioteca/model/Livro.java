@@ -30,6 +30,9 @@ public class Livro {
     private String capaFoto;
     private boolean disponivelLocacao;
 
+    @Column(length = 2000)
+    private String sinopse;
+
     @Enumerated(EnumType.STRING)
     private ClassificacaoEtaria classificacaoEtaria;
 

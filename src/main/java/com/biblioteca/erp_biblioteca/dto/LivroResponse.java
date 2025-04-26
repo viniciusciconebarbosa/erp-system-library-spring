@@ -5,30 +5,34 @@ import com.biblioteca.erp_biblioteca.model.Livro;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 import java.util.UUID;
 
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class LivroResumoDTO {
+public class LivroResponse {
     private UUID id;
     private String titulo;
     private String autor;
-    private String capaFoto;
+    private String genero;
+    private String capaFoto; // URL completa da imagem
     private boolean disponivelLocacao;
+    private String classificacaoEtaria;
+    private String estadoConservacao;
+    private String sinopse;
     
-    public static LivroResumoDTO fromEntity(Livro livro, StorageConfig storageConfig) {
-        return LivroResumoDTO.builder()
+    public static LivroResponse fromEntity(Livro livro, StorageConfig storageConfig) {
+        return LivroResponse.builder()
             .id(livro.getId())
             .titulo(livro.getTitulo())
             .autor(livro.getAutor())
+            .genero(livro.getGenero().name())
             .capaFoto(storageConfig.getFullImageUrl(livro.getCapaFoto()))
             .disponivelLocacao(livro.isDisponivelLocacao())
+            .classificacaoEtaria(livro.getClassificacaoEtaria().name())
+            .estadoConservacao(livro.getEstadoConservacao().name())
+            .sinopse(livro.getSinopse())
             .build();
     }
 }

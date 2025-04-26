@@ -5,6 +5,7 @@ import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,8 +14,23 @@ import java.util.List;
 @Configuration
 public class OpenApiConfig {
 
+    @Value("${spring.profiles.active:dev}")
+    private String activeProfile;
+
     @Bean
     public OpenAPI customOpenAPI() {
+        Server server;
+        
+        if ("prod".equals(activeProfile)) {
+            server = new Server()
+                .url("https://minha1api.duckdns.org")
+                .description("Servidor de Produção");
+        } else {
+            server = new Server()
+                .url("http://localhost:8080")
+                .description("Servidor Local");
+        }
+
         return new OpenAPI()
                 .info(new Info()
                         .title("API ERP Biblioteca Comunitária")
@@ -27,9 +43,6 @@ public class OpenApiConfig {
                         .license(new License()
                                 .name("Apache 2.0")
                                 .url("http://springdoc.org")))
-                .servers(List.of(
-                        new Server().url("http://localhost:8080").description("Servidor Local"),
-                        new Server().url("https://api.biblioteca.com").description("Servidor de Produção")
-                ));
+                .servers(List.of(server));
     }
 }
