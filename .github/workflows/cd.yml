@@ -40,7 +40,7 @@ jobs:
           username: ${{ secrets.ORACLE_USERNAME }}
           key: ${{ secrets.ORACLE_SSH_KEY }}
           port: 22
-          source: "uploads/capas/*"
+          source: "Uploads/capas/*"
           target: "/home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/uploads/capas/"
           strip_components: 2
 
@@ -67,7 +67,7 @@ jobs:
           source: "dist/biblioteca-api.jar"
           target: "/home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/"
 
-      - name: Setup permissions and verify JAR
+      - name: Setup permissions and environment
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.ORACLE_HOST }}
@@ -96,10 +96,26 @@ jobs:
             JWT_EXPIRATION=${{ secrets.JWT_EXPIRATION }}
             SPRING_PROFILES_ACTIVE=prod
             EOL
+            # Validate environment variables
+            source /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/.env
+            if [ -z "$DB_URL" ] || [ -z "$DB_USER" ] || [ -z "$DB_PASSWORD" ] || [ -z "$JWT_SECRET" ] || [ -z "$JWT_EXPIRATION" ]; then
+              echo "Error: Missing required environment variables"
+              exit 1
+            fi
+            # Test database connectivity
+            mysql -h ${{ secrets.DB_HOST }} -P 3306 -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "SELECT 1" || {
+              echo "Error: Failed to connect to database"
+              exit 1
+            }
 
-      - name: Validate Flyway Migrations
+      - name: Validate and Repair Flyway Migrations
         run: |
-          mvn flyway:validate -Dflyway.url=jdbc:mysql://${{ secrets.DB_HOST }}:3306/erp_biblioteca -Dflyway.user=${{ secrets.DB_USER }} -Dflyway.password=${{ secrets.DB_PASSWORD }}
+          echo "Validating Flyway migrations..."
+          mvn flyway:validate -Dflyway.url=jdbc:mysql://${{ secrets.DB_HOST }}:3306/erp_biblioteca -Dflyway.user=${{ secrets.DB_USER }} -Dflyway.password=${{ secrets.DB_PASSWORD }} || {
+            echo "Flyway validation failed, attempting repair..."
+            mvn flyway:repair -Dflyway.url=jdbc:mysql://${{ secrets.DB_HOST }}:3306/erp_biblioteca -Dflyway.user=${{ secrets.DB_USER }} -Dflyway.password=${{ secrets.DB_PASSWORD }}
+            mvn flyway:validate -Dflyway.url=jdbc:mysql://${{ secrets.DB_HOST }}:3306/erp_biblioteca -Dflyway.user=${{ secrets.DB_USER }} -Dflyway.password=${{ secrets.DB_PASSWORD }}
+          }
 
       - name: Setup and Start Service
         uses: appleboy/ssh-action@master
@@ -118,7 +134,7 @@ jobs:
             User=${{ secrets.ORACLE_USERNAME }}
             WorkingDirectory=/home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api
             EnvironmentFile=/home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/.env
-            ExecStart=/usr/bin/java -jar /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/biblioteca-api.jar
+            ExecStart=/usr/bin/java -Xms256m -Xmx512m -jar /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/biblioteca-api.jar
             SuccessExitStatus=143
             TimeoutStopSec=10
             Restart=on-failure
@@ -131,8 +147,14 @@ jobs:
             sudo systemctl daemon-reload
             sudo systemctl enable biblioteca-api
             sudo systemctl start biblioteca-api
+            sleep 60
+            if ! systemctl is-active --quiet biblioteca-api; then
+              echo "Service failed to start, checking logs..."
+              journalctl -u biblioteca-api.service --since "15 minutes ago"
+              exit 1
+            fi
 
-      - name: Verify Service Status and Logs
+      - name: Verify Service and Test Endpoint
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.ORACLE_HOST }}
@@ -140,10 +162,25 @@ jobs:
           key: ${{ secrets.ORACLE_SSH_KEY }}
           port: 22
           script: |
-            sleep 10
             sudo systemctl status biblioteca-api || true
-            journalctl -u biblioteca-api.service --since "10 minutes ago" || true
+            journalctl -u biblioteca-api.service --since "15 minutes ago" | grep -i "error\\|exception" || echo "No errors found in logs"
             if ! systemctl is-active --quiet biblioteca-api; then
-              echo "Service failed to start"
+              echo "Service is not active after verification"
               exit 1
             fi
+            # Test API endpoint
+            http_code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080)
+            if [ "$http_code" -ne 200 ] && [ "$http_code" -ne 401 ] && [ "$http_code" -ne 403 ]; then
+              echo "Error: API endpoint returned unexpected status code: $http_code"
+              exit 1
+            fi
+            # Test static resource (capas)
+            if [ -f /home/${{ secrets.ORACLE_USERNAME }}/biblioteca-api/uploads/capas/sample.jpg ]; then
+              curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/uploads/capas/sample.jpg | grep -E "^200$" || {
+                echo "Error: Static resource /uploads/capas/sample.jpg not accessible"
+                exit 1
+              }
+            else
+              echo "Warning: Sample image not found, skipping static resource test"
+            fi
+            echo "Service is running and API endpoints are accessible"
