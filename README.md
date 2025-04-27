@@ -1,4 +1,4 @@
-# 📚 ERP Controle de Estoque - Biblioteca Comunitária
+# ERP Controle de Estoque - Biblioteca Comunitária
 
 ## 🌐 API Pública
 Acesse a documentação Swagger da API:  
