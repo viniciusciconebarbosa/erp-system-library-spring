@@ -1,9 +1,15 @@
+# 📚 ERP Controle de Estoque - Biblioteca Comunitária
 
-# ERP Controle de estoque - Biblioteca comunitaria
+## 🌐 API Pública
+Acesse a documentação Swagger da API:  
+🔗 [Swagger UI](https://minha1api.duckdns.org/swagger-ui/index.html#/)
 
-https://minha1api.duckdns.org/swagger-ui/index.html#/
-frontend repository: https://github.com/viniciusciconebarbosa/erp-system-library-front
-page:
+## 🖥️ Repositório do Frontend  
+O código-fonte do frontend está disponível no GitHub:  
+🔗 [Repositório do Frontend](https://github.com/viniciusciconebarbosa/erp-system-library-front)
+
+## 📄 Página  
+
 
 ## Sobre o Projeto
 Este é um projeto ERP web e android para gerenciar o estoque de uma biblioteca, permitindo cadastrar um livro doado, busca livros em estoque e tambem livros locados. Será Desenvolvido em Java (Spring Boot) e Next.js,
