@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -118,6 +120,18 @@ public class GlobalExceptionHandler {
         );
         
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiError);
+    }
+
+    @ExceptionHandler({AccessDeniedException.class, AuthorizationDeniedException.class})
+    public ResponseEntity<ApiError> handleAccessDenied(Exception ex) {
+        ApiError apiError = new ApiError(
+            HttpStatus.FORBIDDEN.value(),
+            "Acesso negado - Permissão insuficiente",
+            LocalDateTime.now(),
+            null
+        );
+        
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
     }
 
     @ExceptionHandler(Exception.class)
