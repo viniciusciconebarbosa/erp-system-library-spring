@@ -69,7 +69,7 @@ public class SecurityConfig {
                     response.setCharacterEncoding("UTF-8");
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                    response.getWriter().write("{\"status\":403,\"message\":\"Acesso negado. Você não tem permissão para acessar este recurso.\",\"timestamp\":\""
+                    response.getWriter().write("{\"status\":403,\"message\":\"Acesso negado\",\"timestamp\":\""
                             + java.time.LocalDateTime.now() + "\"}");
                 }))
             .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)

@@ -2,26 +2,23 @@ package com.biblioteca.erp_biblioteca.config;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import jakarta.servlet.http.HttpServletResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.HashMap;
-import java.util.Map;
-import java.time.LocalDateTime;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 
 @TestConfiguration
 @EnableWebSecurity
@@ -29,50 +26,54 @@ import java.time.LocalDateTime;
 public class TestSecurityConfig {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    @Primary
+    public SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
+            .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/health").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/livros").permitAll()
+                .requestMatchers("/api/livros/disponiveis").permitAll()
+                .requestMatchers("/api/livros/{id}").hasRole("ADMIN")
                 .anyRequest().authenticated())
             .exceptionHandling(handling -> handling
                 .authenticationEntryPoint((request, response, authException) -> {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setStatus(401);
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                    response.setCharacterEncoding("UTF-8");
-                    
-                    Map<String, Object> body = new HashMap<>();
-                    body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
-                    body.put("message", "Acesso não autorizado. Por favor, faça login.");
-                    body.put("timestamp", LocalDateTime.now().toString());
-                    
-                    new ObjectMapper().writeValue(response.getOutputStream(), body);
+                    response.getWriter().write("{\"message\":\"Acesso não autorizado\",\"status\":401}");
                 })
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setStatus(403);
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                    response.setCharacterEncoding("UTF-8");
-                    
-                    Map<String, Object> body = new HashMap<>();
-                    body.put("status", HttpServletResponse.SC_FORBIDDEN);
-                    body.put("message", "Acesso negado - Permissão insuficiente");
-                    body.put("timestamp", LocalDateTime.now().toString());
-                    
-                    new ObjectMapper().writeValue(response.getOutputStream(), body);
+                    response.getWriter().write("{\"message\":\"Acesso negado\",\"status\":403}");
                 }));
-        
+
         return http.build();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl hierarchy = new RoleHierarchyImpl();
+        hierarchy.setHierarchy("ROLE_ADMIN > ROLE_COMUM");
+        return hierarchy;
+    }
+
+    @Bean
+    public DefaultWebSecurityExpressionHandler webSecurityExpressionHandler() {
+        DefaultWebSecurityExpressionHandler expressionHandler = new DefaultWebSecurityExpressionHandler();
+        expressionHandler.setRoleHierarchy(roleHierarchy());
+        return expressionHandler;
+    }
+
+    @Bean
+    public PasswordEncoder testPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager testAuthenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 }

@@ -1,7 +1,7 @@
 package com.biblioteca.erp_biblioteca.controller;
 
 import com.biblioteca.erp_biblioteca.config.StorageConfig;
-import com.biblioteca.erp_biblioteca.dto.DeleteResponse;
+import com.biblioteca.erp_biblioteca.dto.ApiResponse;
 import com.biblioteca.erp_biblioteca.dto.LivroDTO;
 import com.biblioteca.erp_biblioteca.dto.LivroResponse;
 import com.biblioteca.erp_biblioteca.dto.LivroResumoDTO;
@@ -23,12 +23,13 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.ServletException;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 
 import java.io.IOException;
 import java.util.List;
@@ -49,35 +50,19 @@ public class LivroController {
         description = "Permite o cadastro de um novo livro com seus dados básicos e uma imagem de capa opcional"
     )
     @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200",
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "201",
             description = "Livro cadastrado com sucesso",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = LivroResponse.class)
+                schema = @Schema(implementation = ApiResponse.class)
             )
         ),
-        @ApiResponse(
-            responseCode = "400",
-            description = "Dados inválidos ou arquivo de capa com formato não permitido",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = ErrorResponse.class)
-            )
-        ),
-        @ApiResponse(
-            responseCode = "401",
-            description = "Não autorizado - necessário autenticação",
-            content = @Content(schema = @Schema(hidden = true))
-        ),
-        @ApiResponse(
-            responseCode = "403",
-            description = "Proibido - necessário permissão ADMIN ou COMUM",
-            content = @Content(schema = @Schema(hidden = true))
-        )
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Dados inválidos"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public ResponseEntity<LivroResponse> cadastrarLivro(
-            @Valid @RequestPart("livro") 
+    public ResponseEntity<ApiResponse> cadastrarLivro(
+            @Validated(LivroDTO.Create.class) @RequestPart("livro") 
             @Parameter(
                 description = "Dados do livro em formato JSON",
                 required = true,
@@ -113,7 +98,13 @@ public class LivroController {
         }
 
         Livro novoLivro = livroService.cadastrarLivro(livroDTO, capaFile);
-        return ResponseEntity.ok(LivroResponse.fromEntity(novoLivro, storageConfig));
+        ApiResponse response = new ApiResponse(
+            "Livro cadastrado com sucesso", 
+            novoLivro.getId().toString(), 
+            "SUCCESS"
+        );
+        response.setData(LivroResponse.fromEntity(novoLivro, storageConfig));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
@@ -122,7 +113,7 @@ public class LivroController {
         description = "Retorna uma lista resumida de livros para exibição na página inicial"
     )
     @ApiResponses(value = {
-        @ApiResponse(
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "200",
             description = "Lista de livros retornada com sucesso",
             content = @Content(
@@ -151,7 +142,7 @@ public class LivroController {
         description = "Retorna os detalhes completos de um livro específico baseado em seu ID"
     )
     @ApiResponses(value = {
-        @ApiResponse(
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "200",
             description = "Livro encontrado com sucesso",
             content = @Content(
@@ -159,7 +150,7 @@ public class LivroController {
                 schema = @Schema(implementation = LivroResponse.class)
             )
         ),
-        @ApiResponse(
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "404",
             description = "Livro não encontrado",
             content = @Content(
@@ -180,110 +171,71 @@ public class LivroController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'COMUM')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
         summary = "Atualiza um livro",
         description = "Permite a atualização dos dados de um livro existente"
     )
     @ApiResponses(value = {
-        @ApiResponse(
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "200",
             description = "Livro atualizado com sucesso",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = LivroResponse.class)
+                schema = @Schema(implementation = ApiResponse.class)
             )
         ),
-        @ApiResponse(
-            responseCode = "400",
-            description = "Dados inválidos",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = ErrorResponse.class)
-            )
-        ),
-        @ApiResponse(
-            responseCode = "401",
-            description = "Não autorizado - necessário autenticação",
-            content = @Content(schema = @Schema(hidden = true))
-        ),
-        @ApiResponse(
-            responseCode = "403",
-            description = "Proibido - necessário permissão ADMIN ou COMUM",
-            content = @Content(schema = @Schema(hidden = true))
-        ),
-        @ApiResponse(
-            responseCode = "404",
-            description = "Livro não encontrado",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = ErrorResponse.class)
-            )
-        )
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Dados inválidos"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Acesso negado"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Livro não encontrado")
     })
-    public ResponseEntity<LivroResponse> atualizarLivro(
+    public ResponseEntity<ApiResponse> atualizarLivro(
         @Parameter(
             description = "ID do livro",
             example = "123e4567-e89b-12d3-a456-426614174000",
             required = true
         )
         @PathVariable UUID id,
-        @Valid @RequestBody 
+        @Validated(LivroDTO.Update.class) @RequestBody 
         @Parameter(
             description = "Dados atualizados do livro",
             required = true
         ) LivroDTO livroDTO) {
+        
         Livro livroAtualizado = livroService.atualizarLivro(id, livroDTO);
-        return ResponseEntity.ok(LivroResponse.fromEntity(livroAtualizado, storageConfig));
+        ApiResponse response = new ApiResponse(
+            "Livro atualizado com sucesso", 
+            livroAtualizado.getId().toString(), 
+            "SUCCESS"
+        );
+        response.setData(LivroResponse.fromEntity(livroAtualizado, storageConfig));
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
         summary = "Remove um livro",
-        description = "Permite a remoção de um livro do sistema"
+        description = "Remove um livro do sistema"
     )
     @ApiResponses(value = {
-        @ApiResponse(
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "200",
             description = "Livro removido com sucesso",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = DeleteResponse.class)
+                schema = @Schema(implementation = ApiResponse.class)
             )
         ),
-        @ApiResponse(
-            responseCode = "401",
-            description = "Não autorizado - necessário autenticação",
-            content = @Content(schema = @Schema(hidden = true))
-        ),
-        @ApiResponse(
-            responseCode = "403",
-            description = "Proibido - necessário permissão ADMIN",
-            content = @Content(schema = @Schema(hidden = true))
-        ),
-        @ApiResponse(
-            responseCode = "404",
-            description = "Livro não encontrado",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = ErrorResponse.class)
-            )
-        )
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Acesso negado"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Livro não encontrado")
     })
-    public ResponseEntity<DeleteResponse> removerLivro(
-        @Parameter(
-            description = "ID do livro",
-            example = "123e4567-e89b-12d3-a456-426614174000",
-            required = true
-        )
-        @PathVariable UUID id) {
+    public ResponseEntity<ApiResponse> removerLivro(@PathVariable UUID id) {
         livroService.deletarLivro(id);
-        DeleteResponse response = new DeleteResponse(
-            "Livro deletado com sucesso",
-            id.toString(),
-            "Livro"
-        );
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new ApiResponse(
+            "Livro deletado com sucesso", 
+            id.toString(), 
+            "SUCCESS"
+        ));
     }
 }

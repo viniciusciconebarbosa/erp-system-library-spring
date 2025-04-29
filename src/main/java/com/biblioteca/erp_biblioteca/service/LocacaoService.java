@@ -88,4 +88,12 @@ public class LocacaoService {
         }
         locacaoRepository.deleteById(id);
     }
+
+    public List<Locacao> listarLocacoesAtivas() {
+        return locacaoRepository.findByStatus(StatusLocacao.ATIVA);
+    }
+
+    public long contarLocacoesAtivas() {
+        return locacaoRepository.countByStatus(StatusLocacao.ATIVA);
+    }
 }

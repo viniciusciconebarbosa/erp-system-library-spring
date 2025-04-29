@@ -6,21 +6,31 @@ import com.biblioteca.erp_biblioteca.enums.Genero;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.groups.Default;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class LivroDTO {
-    @NotBlank(message = "Título é obrigatório")
+    public interface Create extends Default {}
+    public interface Update extends Default {}
+
+    @NotBlank(message = "Título é obrigatório", groups = Create.class)
     @Size(min = 2, max = 255, message = "Título deve ter entre 2 e 255 caracteres")
     private String titulo;
 
-    @NotBlank(message = "Autor é obrigatório")
+    @NotBlank(message = "Autor é obrigatório", groups = Create.class)
     @Size(min = 2, max = 255, message = "Autor deve ter entre 2 e 255 caracteres")
     private String autor;
 
-    @NotNull(message = "Valores aceitos: [FICCAO, NAO_FICCAO, TERROR, ROMANCE, EDUCACAO, TECNICO]")
+    @NotNull(message = "Gênero é obrigatório", groups = Create.class)
     private Genero genero;
 
     private String capaFoto;
@@ -28,10 +38,10 @@ public class LivroDTO {
     @Size(max = 2000, message = "Sinopse deve ter no máximo 2000 caracteres")
     private String sinopse;
 
-    @NotNull(message = "Valores aceitos: [LIVRE, DOZE_ANOS, QUATORZE_ANOS, DEZESSEIS_ANOS, DEZOITO_ANOS]")
+    @NotNull(message = "Classificação etária é obrigatória", groups = Create.class)
     private ClassificacaoEtaria classificacaoEtaria;
 
-    @NotNull(message = "Valores aceitos: [NOVO, OTIMO, BOM, REGULAR, RUIM]")
+    @NotNull(message = "Estado de conservação é obrigatório", groups = Create.class)
     private EstadoConservacao estadoConservacao;
 
     private UUID doadorId;

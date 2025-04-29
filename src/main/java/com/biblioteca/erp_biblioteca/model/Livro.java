@@ -45,6 +45,6 @@ public class Livro {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "livro")
+    @OneToMany(mappedBy = "livro", cascade = CascadeType.ALL)
     private Set<Locacao> locacoes;
 }

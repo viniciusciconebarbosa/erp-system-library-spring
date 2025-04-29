@@ -62,20 +62,30 @@ public class LivroService {
 
     public Livro atualizarLivro(UUID id, LivroDTO livroDTO) {
         Livro livro = livroRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Livro não encontrado"));
+            .orElseThrow(() -> new BusinessException("Livro não encontrado"));
 
         Usuario doador = null;
         if (livroDTO.getDoadorId() != null) {
             doador = usuarioRepository.findById(livroDTO.getDoadorId())
-                .orElseThrow(() -> new RuntimeException("ID do doador informado não existe"));
+                .orElseThrow(() -> new BusinessException("ID do doador informado não existe"));
         }
 
         livro.setTitulo(livroDTO.getTitulo());
+        livro.setAutor(livroDTO.getAutor());
         livro.setGenero(livroDTO.getGenero());
-        livro.setCapaFoto(livroDTO.getCapaFoto());
         livro.setClassificacaoEtaria(livroDTO.getClassificacaoEtaria());
         livro.setEstadoConservacao(livroDTO.getEstadoConservacao());
-        livro.setDoador(doador);
+        livro.setSinopse(livroDTO.getSinopse());
+        
+        // Só atualiza o doador se um novo for fornecido
+        if (doador != null) {
+            livro.setDoador(doador);
+        }
+        
+        // Só atualiza a capa se uma nova for fornecida
+        if (livroDTO.getCapaFoto() != null) {
+            livro.setCapaFoto(livroDTO.getCapaFoto());
+        }
 
         return livroRepository.save(livro);
     }

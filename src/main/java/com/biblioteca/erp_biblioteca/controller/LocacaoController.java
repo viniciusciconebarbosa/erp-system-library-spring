@@ -1,7 +1,9 @@
 package com.biblioteca.erp_biblioteca.controller;
 
+import com.biblioteca.erp_biblioteca.config.StorageConfig;
 import com.biblioteca.erp_biblioteca.dto.DeleteResponse;
 import com.biblioteca.erp_biblioteca.dto.LocacaoDTO;
+import com.biblioteca.erp_biblioteca.dto.LocacaoResponse;
 import com.biblioteca.erp_biblioteca.model.Locacao;
 import com.biblioteca.erp_biblioteca.service.LocacaoService;
 import jakarta.validation.Valid;
@@ -15,9 +17,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
-
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/locacoes")
@@ -25,6 +27,7 @@ import java.util.UUID;
 @Tag(name = "Locações", description = "API para gerenciamento de locações de livros da biblioteca")
 public class LocacaoController {
     private final LocacaoService locacaoService;
+    private final StorageConfig storageConfig;
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'COMUM')")
@@ -59,11 +62,11 @@ public class LocacaoController {
         @ApiResponse(responseCode = "403", description = "Proibido - necessário permissão ADMIN ou COMUM"),
         @ApiResponse(responseCode = "404", description = "Locação não encontrada")
     })
-    public ResponseEntity<Locacao> buscarLocacao(
+    public ResponseEntity<LocacaoResponse> buscarLocacao(
         @Parameter(description = "ID da locação", example = "123e4567-e89b-12d3-a456-426614174000")
         @PathVariable UUID id) {
         Locacao locacao = locacaoService.buscarLocacao(id);
-        return ResponseEntity.ok(locacao);
+        return ResponseEntity.ok(LocacaoResponse.fromEntity(locacao, storageConfig));
     }
 
     @GetMapping
@@ -77,9 +80,12 @@ public class LocacaoController {
         @ApiResponse(responseCode = "401", description = "Não autorizado - necessário autenticação"),
         @ApiResponse(responseCode = "403", description = "Proibido - necessário permissão ADMIN")
     })
-    public ResponseEntity<List<Locacao>> listarLocacoes() {
+    public ResponseEntity<List<LocacaoResponse>> listarLocacoes() {
         List<Locacao> locacoes = locacaoService.listarTodas();
-        return ResponseEntity.ok(locacoes);
+        List<LocacaoResponse> response = locacoes.stream()
+            .map(locacao -> LocacaoResponse.fromEntity(locacao, storageConfig))
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/usuario/{usuarioId}")
@@ -94,11 +100,14 @@ public class LocacaoController {
         @ApiResponse(responseCode = "403", description = "Proibido - necessário permissão ADMIN ou COMUM"),
         @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
-    public ResponseEntity<List<Locacao>> listarLocacoesPorUsuario(
+    public ResponseEntity<List<LocacaoResponse>> listarLocacoesPorUsuario(
         @Parameter(description = "ID do usuário", example = "123e4567-e89b-12d3-a456-426614174000")
         @PathVariable UUID usuarioId) {
         List<Locacao> locacoes = locacaoService.listarPorUsuario(usuarioId);
-        return ResponseEntity.ok(locacoes);
+        List<LocacaoResponse> response = locacoes.stream()
+            .map(locacao -> LocacaoResponse.fromEntity(locacao, storageConfig))
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}/devolver")
@@ -144,5 +153,40 @@ public class LocacaoController {
             "Locacao"
         );
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/ativas")
+    @PreAuthorize("hasAnyRole('ADMIN', 'COMUM')")
+    @Operation(
+        summary = "Lista locações ativas",
+        description = "Retorna uma lista com todas as locações ativas no sistema"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de locações ativas retornada com sucesso"),
+        @ApiResponse(responseCode = "401", description = "Não autorizado - necessário autenticação"),
+        @ApiResponse(responseCode = "403", description = "Proibido - necessário permissão ADMIN ou COMUM")
+    })
+    public ResponseEntity<List<LocacaoResponse>> listarLocacoesAtivas() {
+        List<Locacao> locacoes = locacaoService.listarLocacoesAtivas();
+        List<LocacaoResponse> response = locacoes.stream()
+            .map(locacao -> LocacaoResponse.fromEntity(locacao, storageConfig))
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/ativas/quantidade")
+    @PreAuthorize("hasAnyRole('ADMIN', 'COMUM')")
+    @Operation(
+        summary = "Conta locações ativas",
+        description = "Retorna o número total de locações ativas no sistema"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Quantidade de locações ativas retornada com sucesso"),
+        @ApiResponse(responseCode = "401", description = "Não autorizado - necessário autenticação"),
+        @ApiResponse(responseCode = "403", description = "Proibido - necessário permissão ADMIN ou COMUM")
+    })
+    public ResponseEntity<Long> contarLocacoesAtivas() {
+        long quantidade = locacaoService.contarLocacoesAtivas();
+        return ResponseEntity.ok(quantidade);
     }
 }

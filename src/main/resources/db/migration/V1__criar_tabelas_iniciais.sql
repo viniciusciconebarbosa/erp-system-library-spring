@@ -23,7 +23,7 @@ CREATE TABLE livros (
     doador_id BINARY(16),
     sinopse TEXT,
     PRIMARY KEY (id),
-    CONSTRAINT fk_doador FOREIGN KEY (doador_id) REFERENCES usuarios(id),
+    CONSTRAINT fk_doador FOREIGN KEY (doador_id) REFERENCES usuarios(id) ON DELETE CASCADE,
     CONSTRAINT check_genero CHECK (genero IN ('FICCAO', 'NAO_FICCAO', 'TERROR', 'ROMANCE', 'EDUCACAO', 'TECNICO'))
 );
 
@@ -35,8 +35,8 @@ CREATE TABLE locacoes (
     data_devolucao DATETIME,
     status VARCHAR(50) NOT NULL DEFAULT 'ATIVA',
     PRIMARY KEY (id),
-    CONSTRAINT fk_locacao_livro FOREIGN KEY (livro_id) REFERENCES livros(id),
-    CONSTRAINT fk_locacao_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    CONSTRAINT fk_locacao_livro FOREIGN KEY (livro_id) REFERENCES livros(id) ON DELETE CASCADE,
+    CONSTRAINT fk_locacao_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
     CONSTRAINT check_status CHECK (status IN ('ATIVA', 'FINALIZADA', 'CANCELADA'))
 );
 

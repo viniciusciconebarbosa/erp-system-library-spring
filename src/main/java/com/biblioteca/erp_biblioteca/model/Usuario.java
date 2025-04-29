@@ -37,11 +37,11 @@ public class Usuario {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "doador")
+    @OneToMany(mappedBy = "doador", cascade = CascadeType.REMOVE)
     private Set<Livro> livrosDoados;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "usuario")
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE)
     private Set<Locacao> locacoes;
 }
