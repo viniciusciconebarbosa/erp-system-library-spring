@@ -42,6 +42,6 @@ O sistema segue uma arquitetura cliente-servidor:
 - **Back-end**: Spring Boot gerencia lógica.
 - **Banco**: armazena tabelas de livros e vendas.
 
-##Doc
-![swagger](https://github.com/user-attachments/assets/08bcaa53-d932-4d6c-ab99-5dff8278e043)
+
+
 
