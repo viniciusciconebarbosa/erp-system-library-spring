@@ -2,6 +2,7 @@ package com.biblioteca.erp_biblioteca.service;
 
 import com.biblioteca.erp_biblioteca.dto.LivroDTO;
 import com.biblioteca.erp_biblioteca.dto.LivroResumoDTO;
+import com.biblioteca.erp_biblioteca.dto.CategoriaGraficoDTO;
 import com.biblioteca.erp_biblioteca.exception.BusinessException;
 import com.biblioteca.erp_biblioteca.model.Livro;
 import com.biblioteca.erp_biblioteca.model.Usuario;
@@ -118,5 +119,13 @@ public class LivroService {
         List<LivroResumoDTO> livros = livroRepository.findDisponiveisResumido();
         livros.forEach(livro -> livro.setCapaFoto(storageConfig.getFullImageUrl(livro.getCapaFoto())));
         return livros;
+    }
+
+    public List<CategoriaGraficoDTO> getEstatisticasPorGenero() {
+        return livroRepository.countByGenero();
+    }
+
+    public List<CategoriaGraficoDTO> getEstatisticasPorConservacao() {
+        return livroRepository.countByEstadoConservacao();
     }
 }

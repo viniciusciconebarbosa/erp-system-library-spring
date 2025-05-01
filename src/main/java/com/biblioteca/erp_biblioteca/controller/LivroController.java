@@ -5,10 +5,10 @@ import com.biblioteca.erp_biblioteca.dto.ApiResponse;
 import com.biblioteca.erp_biblioteca.dto.LivroDTO;
 import com.biblioteca.erp_biblioteca.dto.LivroResponse;
 import com.biblioteca.erp_biblioteca.dto.LivroResumoDTO;
+import com.biblioteca.erp_biblioteca.dto.CategoriaGraficoDTO;
 import com.biblioteca.erp_biblioteca.exception.BusinessException;
 import com.biblioteca.erp_biblioteca.model.Livro;
 import com.biblioteca.erp_biblioteca.service.LivroService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -237,5 +237,43 @@ public class LivroController {
             id.toString(), 
             "SUCCESS"
         ));
+    }
+
+    @GetMapping("/estatisticas/generos")
+    @Operation(
+        summary = "Retorna estatísticas de livros por gênero",
+        description = "Retorna a quantidade de livros agrupados por gênero para exibição em gráfico"
+    )
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200",
+            description = "Estatísticas retornadas com sucesso",
+            content = @Content(
+                mediaType = "application/json",
+                array = @ArraySchema(schema = @Schema(implementation = CategoriaGraficoDTO.class))
+            )
+        )
+    })
+    public ResponseEntity<List<CategoriaGraficoDTO>> getEstatisticasPorGenero() {
+        return ResponseEntity.ok(livroService.getEstatisticasPorGenero());
+    }
+
+    @GetMapping("/estatisticas/conservacao")
+    @Operation(
+        summary = "Retorna estatísticas de livros por estado de conservação",
+        description = "Retorna a quantidade de livros agrupados por estado de conservação para exibição em gráfico"
+    )
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200",
+            description = "Estatísticas retornadas com sucesso",
+            content = @Content(
+                mediaType = "application/json",
+                array = @ArraySchema(schema = @Schema(implementation = CategoriaGraficoDTO.class))
+            )
+        )
+    })
+    public ResponseEntity<List<CategoriaGraficoDTO>> getEstatisticasPorConservacao() {
+        return ResponseEntity.ok(livroService.getEstatisticasPorConservacao());
     }
 }

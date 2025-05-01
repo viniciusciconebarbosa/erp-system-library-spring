@@ -8,6 +8,7 @@ import com.biblioteca.erp_biblioteca.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,7 +38,7 @@ public class UsuarioController {
     })
     public ResponseEntity<Usuario> registrarUsuario(
         @Parameter(description = "Dados do usuário para registro")
-        @RequestBody UsuarioDTO usuarioDTO) {
+        @Validated(UsuarioDTO.Create.class) @RequestBody UsuarioDTO usuarioDTO) {
         Usuario novoUsuario = usuarioService.criarUsuario(usuarioDTO);
         return ResponseEntity.ok(novoUsuario);
     }
@@ -57,7 +58,7 @@ public class UsuarioController {
     })
     public ResponseEntity<Usuario> registrarAdmin(
         @Parameter(description = "Dados do administrador para registro")
-        @RequestBody UsuarioDTO usuarioDTO) {
+        @Validated(UsuarioDTO.Create.class) @RequestBody UsuarioDTO usuarioDTO) {
         Usuario novoAdmin = usuarioService.criarUsuarioAdmin(usuarioDTO);
         return ResponseEntity.ok(novoAdmin);
     }
@@ -101,7 +102,7 @@ public class UsuarioController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
         summary = "Atualiza um usuário",
-        description = "Permite a atualização dos dados de um usuário existente. Apenas administradores podem realizar esta operação"
+        description = "Permite a atualização dos dados de um usuário existente. A senha é opcional na atualização."
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
@@ -114,7 +115,7 @@ public class UsuarioController {
         @Parameter(description = "ID do usuário", example = "123e4567-e89b-12d3-a456-426614174000")
         @PathVariable UUID id,
         @Parameter(description = "Dados atualizados do usuário")
-        @RequestBody UsuarioDTO usuarioDTO) {
+        @Validated(UsuarioDTO.Update.class) @RequestBody UsuarioDTO usuarioDTO) {
         Usuario usuarioAtualizado = usuarioService.atualizarUsuario(id, usuarioDTO);
         return ResponseEntity.ok(usuarioAtualizado);
     }
