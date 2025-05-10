@@ -103,12 +103,9 @@ O Sistema de Gerenciamento de Biblioteca é uma solução robusta desenvolvida p
 
 ### Ambientes
 1. **Produção**
-   - Banco: Oracle Autonomous Database (Production)
+   - Banco: Oracle MySQL HeatWave
    - Monitoramento 24/7
    - Backup automático
-
-2. **Homologação**
-   - Banco: Oracle Autonomous Database (Development)
    - Ambiente de testes
    - CI/CD integrado
 
