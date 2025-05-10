@@ -6,6 +6,7 @@ target/
 .idea/
 
 # Arquivos de ambiente
+endpoints.md
 .env
 .env.*
 !.env.example

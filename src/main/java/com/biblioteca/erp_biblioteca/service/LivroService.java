@@ -80,7 +80,7 @@ public class LivroService {
         
         // Só atualiza o doador se um novo for fornecido
         if (doador != null) {
-            livro.setDoador(doador);
+        livro.setDoador(doador);
         }
         
         // Só atualiza a capa se uma nova for fornecida
