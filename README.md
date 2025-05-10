@@ -205,6 +205,9 @@ O código-fonte do frontend está disponível no GitHub:
 
 ## 📄 Página  
  🔗 [Pagina da Aplicaçao](https://erp-system-library-front.vercel.app/login)
+ 
+ ## 🖥️ Aplicaçao Desktop JavaFX  
+ 🔗 [Aplicaçao Desktop JavaFX](https://github.com/viniciusciconebarbosa/erp-system-library-desktop)
 
 ## Sobre o Projeto
 Este é um projeto ERP web e android para gerenciar o estoque de uma biblioteca, permitindo cadastrar um livro doado, busca livros em estoque e tambem livros locados. Será Desenvolvido em Java (Spring Boot) e Next.js,
