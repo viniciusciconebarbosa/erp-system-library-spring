@@ -4,16 +4,16 @@ Um sistema ERP robusto projetado para otimizar a gestão de bibliotecas comunit�
 
 ---
 
-## 📋 Índice
+## 📑 Índice
 - [Visão Geral](#visão-geral)
 - [Funcionalidades](#funcionalidades)
-- [Stack Tecnológica](#stack-tecnológica)
-- [Arquitetura](#arquitetura)
+- [Tecnologias Utilizadas](#tecnologias-utilizadas)
+- [Arquitetura do Sistema](#arquitetura-do-sistema)
 - [Infraestrutura](#infraestrutura)
 - [Documentação](#documentação)
-- [Desenvolvimento](#desenvolvimento)
+- [Configuração e Desenvolvimento](#configuração-e-desenvolvimento)
 - [Deploy](#deploy)
-- [Monitoramento](#monitoramento)
+- [Monitoramento e Manutenção](#monitoramento-e-manutenção)
 - [Suporte](#suporte)
 ---
 
