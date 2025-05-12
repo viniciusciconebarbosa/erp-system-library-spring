@@ -1,6 +1,6 @@
-# Sistema de Gerenciamento de Biblioteca
+# Sistema de Gerenciamento de Livraria
 
-Um sistema ERP robusto projetado para otimizar a gestão de bibliotecas comunitárias, oferecendo controle eficiente de acervo, empréstimos e usuários, com uma interface moderna e escalável.
+Um sistema ERP robusto projetado para otimizar a gestão de Livraria comunitária, oferecendo controle eficiente de acervo, empréstimos e usuários, com uma interface moderna e escalável.
 
 ---
 
@@ -19,7 +19,7 @@ Um sistema ERP robusto projetado para otimizar a gestão de bibliotecas comunit�
 
 ## 📖 Visão Geral
 
-O **Sistema de Gerenciamento de Biblioteca** é uma solução completa para automatizar e otimizar processos em bibliotecas comunitárias. Desenvolvido com tecnologias modernas, o sistema oferece uma interface web responsiva e planos de expansão para aplicativos móveis, garantindo eficiência para administradores e uma experiência fluida para usuários finais.
+O **Sistema de Gerenciamento de Livraria** é uma solução completa para automatizar e otimizar processos em Livraria comunitária. Desenvolvido com tecnologias modernas, o sistema oferece uma interface web responsiva e planos de expansão para aplicativos móveis, garantindo eficiência para administradores e uma experiência fluida para usuários finais.
 
 ---
 
@@ -136,7 +136,7 @@ O **Sistema de Gerenciamento de Biblioteca** é uma solução completa para auto
 ### Passos para Configuração
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-usuario/biblioteca.git
+   git clone https://github.com/viniciusciconebarbosa/erp-system-library-spring.git
    ```
 2. Configure as variáveis de ambiente:
    ```bash
