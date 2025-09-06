@@ -28,8 +28,8 @@ O **Sistema de Gerenciamento de Livraria** é uma solução completa para automa
 - **Gestão de Acervo**: Cadastro, edição e consulta de itens bibliográficos.
 - **Controle de Empréstimos**: Automatização de empréstimos, devoluções e multas.
 - **Busca Avançada**: Filtros por título, autor, categoria e outros critérios.
-- **Gestão de Usuários**: Administração de perfis, permissões e histórico.
-- **Sistema de Doações**: Integração para gerenciar contribuições ao acervo.
+- **Gestão de Usuários com Sistema de Login e Registro**: Administração de perfis, permissões e histórico.
+- **Sistema de Cadastro de Doações**: Integração para gerenciar contribuições ao acervo.
 - **Relatórios em Tempo Real**: Estatísticas detalhadas sobre uso e desempenho.
 - **Interface Acessível**: Design responsivo e compatível com padrões de acessibilidade.
 
