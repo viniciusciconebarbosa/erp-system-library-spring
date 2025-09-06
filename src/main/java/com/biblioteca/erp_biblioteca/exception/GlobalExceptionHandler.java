@@ -2,148 +2,78 @@ package com.biblioteca.erp_biblioteca.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.FieldError;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authorization.AuthorizationDeniedException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
-@Order(Ordered.HIGHEST_PRECEDENCE)
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiError> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
-        String mensagem = "O corpo da requisição está ausente ou mal formatado";
-        Map<String, String> detalhes = new HashMap<>();
-        String errorMessage = ex.getMessage();
-        
-        if (errorMessage.contains("UUID")) {
-            mensagem = "Formato de UUID inválido";
-            detalhes.put("detail", "O ID deve ser um UUID válido, exemplo: 123e4567-e89b-12d3-a456-426614174000");
-        } else if (errorMessage.contains("Required request body is missing")) {
-            mensagem = "O corpo da requisição é obrigatório";
-            detalhes.put("detail", "Verifique se o JSON foi enviado corretamente");
-        } else if (errorMessage.contains("EstadoConservacao")) {
-            mensagem = "Valor inválido para estado de conservação";
-            detalhes.put("detail", "Valores aceitos: NOVO, OTIMO, BOM, REGULAR, RUIM");
-        } else if (errorMessage.contains("Genero")) {
-            mensagem = "Valor inválido para gênero";
-            detalhes.put("detail", "Valores aceitos: FICCAO, NAO_FICCAO, TERROR, ROMANCE, EDUCACAO, TECNICO");
-        } else if (errorMessage.contains("ClassificacaoEtaria")) {
-            mensagem = "Valor inválido para classificação etária";
-            detalhes.put("detail", "Valores aceitos: LIVRE, DOZE_ANOS, QUATORZE_ANOS, DEZESSEIS_ANOS, DEZOITO_ANOS");
-        } else {
-            detalhes.put("detail", "Verifique se o JSON enviado está correto e todos os campos obrigatórios estão presentes");
-        }
-
-        ApiError apiError = new ApiError(
-            HttpStatus.BAD_REQUEST.value(),
-            mensagem,
-            LocalDateTime.now(),
-            detalhes
-        );
-        
-        return ResponseEntity.badRequest().body(apiError);
+    @ExceptionHandler(EmailJaCadastradoException.class)
+    public ResponseEntity<Map<String, Object>> handleEmailJaCadastrado(EmailJaCadastradoException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.CONFLICT.value());
+        response.put("message", "Email já cadastrado");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ApiError> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
-        Map<String, String> details = new HashMap<>();
-        details.put("supportedMethods", String.join(", ", ex.getSupportedMethods()));
-        details.put("currentMethod", ex.getMethod());
-
-        ApiError apiError = new ApiError(
-            HttpStatus.METHOD_NOT_ALLOWED.value(),
-            String.format("O método '%s' não é suportado para este endpoint. Métodos suportados: %s",
-                ex.getMethod(),
-                String.join(", ", ex.getSupportedMethods())),
-            LocalDateTime.now(),
-            details
-        );
-        
-        return ResponseEntity
-            .status(HttpStatus.METHOD_NOT_ALLOWED)
-            .body(apiError);
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.UNAUTHORIZED.value());
+        response.put("message", "Credenciais inválidas");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleValidationErrors(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach(error -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        
-        // Adiciona a informação sobre o doadorId mesmo quando não há erro
-        errors.put("doadorId", "ID do usuário doador (opcional)");
-
-        ApiError apiError = new ApiError(
-            HttpStatus.BAD_REQUEST.value(),
-            "Erro de validação",
-            LocalDateTime.now(),
-            errors
-        );
-        
-        return ResponseEntity.badRequest().body(apiError);
+    public ResponseEntity<Map<String, Object>> handleValidationErrors(MethodArgumentNotValidException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("message", "Erro de validação");
+        response.put("errors", ex.getBindingResult().getFieldErrors().stream()
+            .map(error -> Map.of(
+                "field", error.getField(),
+                "message", error.getDefaultMessage()
+            ))
+            .toList());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ApiError> handleBusinessException(BusinessException ex) {
-        ApiError apiError = new ApiError(
-            HttpStatus.BAD_REQUEST.value(),
-            ex.getMessage(),
-            LocalDateTime.now(),
-            null
-        );
-        
-        return ResponseEntity.badRequest().body(apiError);
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<Map<String, Object>> handleMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.UNSUPPORTED_MEDIA_TYPE.value());
+        response.put("message", "Tipo de conteúdo não suportado");
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(response);
     }
 
-    @ExceptionHandler(EmailJaCadastradoException.class)
-    public ResponseEntity<ApiError> handleEmailJaCadastrado(EmailJaCadastradoException ex) {
-        ApiError apiError = new ApiError(
-            HttpStatus.CONFLICT.value(),
-            ex.getMessage(),
-            LocalDateTime.now(),
-            null
-        );
-        
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiError);
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.FORBIDDEN.value());
+        response.put("message", "Acesso negado - Permissão insuficiente");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
-    @ExceptionHandler({AccessDeniedException.class, AuthorizationDeniedException.class})
-    public ResponseEntity<ApiError> handleAccessDenied(Exception ex) {
-        ApiError apiError = new ApiError(
-            HttpStatus.FORBIDDEN.value(),
-            "Acesso negado - Permissão insuficiente",
-            LocalDateTime.now(),
-            null
-        );
-        
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Map<String, Object>> handleAuthenticationException(AuthenticationException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.FORBIDDEN.value());
+        response.put("message", "Acesso negado - Autenticação necessária");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleGenericException(Exception ex) {
-        ApiError apiError = new ApiError(
-            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            "Erro interno do servidor",
-            LocalDateTime.now(),
-            null
-        );
-        
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiError);
-    }
-
 }

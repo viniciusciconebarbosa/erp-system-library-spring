@@ -11,12 +11,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
 @Tag(name = "Autenticação", description = "API para autenticação e registro de usuários")
+@Validated
 public class AuthController {
     private final AuthService authService;
 
@@ -32,7 +34,7 @@ public class AuthController {
     })
     public ResponseEntity<?> registro(
         @Parameter(description = "Dados do usuário para registro")
-        @Valid @RequestBody UsuarioDTO usuarioDTO) {
+        @Validated(UsuarioDTO.Create.class) @RequestBody UsuarioDTO usuarioDTO) {
         return ResponseEntity.ok(authService.registro(usuarioDTO));
     }
 
