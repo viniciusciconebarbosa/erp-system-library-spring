@@ -127,32 +127,113 @@ O **Sistema de Gerenciamento de Livraria** é uma solução completa para automa
 ## 🔧 Configuração e Desenvolvimento
 
 ### Pré-requisitos
-- **Java 21**
-- **Node.js 18+**
-- **Maven**
-- **Oracle Database**
+- **Java 21** ou superior
+- **Maven 3.6+**
+- **MySQL 8.0+** (para desenvolvimento local)
 - **Git**
 
 ### Passos para Configuração
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/viniciusciconebarbosa/erp-system-library-spring.git
-   ```
-2. Configure as variáveis de ambiente:
-   ```bash
-   cp .env.example .env
-   ```
-3. Configure as credenciais da Oracle Cloud no arquivo `.env`:
-   ```properties
-   ORACLE_CLOUD_USERNAME=seu_usuario
-   ORACLE_CLOUD_PASSWORD=sua_senha
-   ORACLE_CLOUD_TENANCY=seu_tenancy
-   ORACLE_CLOUD_REGION=sao-paulo
-   ```
-4. Execute o projeto:
-   ```bash
-   ./mvnw spring-boot:run
-   ```
+
+#### 1. Clone o repositório
+```bash
+git clone https://github.com/viniciusciconebarbosa/erp-system-library-spring.git
+cd erp-system-library-spring
+```
+
+#### 2. Configure o banco de dados MySQL
+Crie um banco de dados MySQL local:
+```sql
+CREATE DATABASE erp_biblioteca;
+```
+
+#### 3. Configure as variáveis de ambiente
+```bash
+# Copie o arquivo de exemplo
+cp env.example .env
+
+# Edite o arquivo .env com suas configurações
+nano .env
+```
+
+Configure as seguintes variáveis no arquivo `.env`:
+```properties
+# Configurações do Banco de Dados
+DB_URL=jdbc:mysql://localhost:3306/erp_biblioteca?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+DB_USER=seu_usuario_mysql
+DB_PASSWORD=sua_senha_mysql
+
+# Configurações JWT
+JWT_SECRET=sua-chave-secreta-super-segura-para-jwt-token
+JWT_EXPIRATION=86400000
+```
+
+#### 4. Execute o projeto
+```bash
+# Instalar dependências e executar
+./mvnw clean install
+./mvnw spring-boot:run
+```
+
+O projeto estará disponível em:
+- **API**: http://localhost:8080
+- **Swagger UI**: http://localhost:8080/swagger-ui.html
+- **API Docs**: http://localhost:8080/api-docs
+
+### 🧪 Executando os Testes
+
+#### Executar todos os testes
+```bash
+./mvnw test
+```
+
+#### Executar testes com relatório detalhado
+```bash
+./mvnw test -Dtest=*Test
+```
+
+#### Executar testes de uma classe específica
+```bash
+./mvnw test -Dtest=UsuarioServiceTest
+```
+
+#### Executar testes com cobertura
+```bash
+./mvnw test jacoco:report
+```
+
+#### Executar apenas testes de integração
+```bash
+./mvnw test -Dtest=*ControllerTest
+```
+
+### 📊 Estrutura dos Testes
+- **Testes Unitários**: Localizados em `src/test/java/`
+- **Testes de Integração**: Testes de controllers e serviços
+- **Banco de Teste**: Utiliza H2 em memória para testes
+- **Relatórios**: Gerados em `target/surefire-reports/`
+
+### 🔧 Comandos Úteis para Desenvolvimento
+
+#### Limpar e recompilar
+```bash
+./mvnw clean compile
+```
+
+#### Executar em modo de desenvolvimento (com hot reload)
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+#### Verificar dependências
+```bash
+./mvnw dependency:tree
+```
+
+#### Gerar documentação da API
+```bash
+./mvnw spring-boot:run
+# Acesse: http://localhost:8080/swagger-ui.html
+```
 
 ---
 
