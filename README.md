@@ -167,12 +167,19 @@ JWT_SECRET=sua-chave-secreta-super-segura-para-jwt-token
 JWT_EXPIRATION=86400000
 ```
 
+
+
+
 #### 4. Execute o projeto
 ```bash
 # Instalar dependências e executar
 ./mvnw clean install
 ./mvnw spring-boot:run
 ```
+<img width="1920" height="263" alt="image" src="https://github.com/user-attachments/assets/baf5bcd1-e839-4138-9448-a438db787c59" />
+
+<img width="1897" height="518" alt="image" src="https://github.com/user-attachments/assets/ebb82e2c-ff36-4e22-b702-41fc578d85ad" />
+
 
 O projeto estará disponível em:
 - **API**: http://localhost:8080
@@ -205,6 +212,11 @@ O projeto estará disponível em:
 ```bash
 ./mvnw test -Dtest=*ControllerTest
 ```
+<img width="1896" height="532" alt="image" src="https://github.com/user-attachments/assets/ef5c2a81-c84b-48e7-91ce-cf538f9d91b1" />
+
+
+<img width="1903" height="745" alt="image" src="https://github.com/user-attachments/assets/6615919d-45d1-44ae-9fea-bc0c1c5a2287" />
+
 
 ### 📊 Estrutura dos Testes
 - **Testes Unitários**: Localizados em `src/test/java/`
@@ -224,6 +236,7 @@ O projeto estará disponível em:
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
+
 #### Verificar dependências
 ```bash
 ./mvnw dependency:tree
@@ -234,6 +247,7 @@ O projeto estará disponível em:
 ./mvnw spring-boot:run
 # Acesse: http://localhost:8080/swagger-ui.html
 ```
+<img width="1901" height="927" alt="image" src="https://github.com/user-attachments/assets/4a3d0d38-ac64-46e2-8df4-95ab1c944b75" />
 
 ---
 
