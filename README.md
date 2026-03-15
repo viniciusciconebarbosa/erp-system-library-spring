@@ -59,7 +59,7 @@ O **Sistema de Gerenciamento de Livraria** é uma solução completa para automa
 - **PWA** para funcionalidade offline
 
 ### Infraestrutura
-- **Oracle Cloud Infrastructure (OCI)** como provedor de nuvem
+- **DigitalOcean** como provedor de nuvem
 - **Nginx** para proxy reverso e balanceamento de carga
 - **GitHub Actions** para CI/CD
 - **Vercel** para deploy do frontend
@@ -71,7 +71,7 @@ O **Sistema de Gerenciamento de Livraria** é uma solução completa para automa
 ### Backend
 - **API RESTful**: Desenvolvida com Spring Boot, seguindo padrões de microserviços.
 - **Autenticação**: JWT para segurança de endpoints.
-- **Banco de Dados**: Oracle MySQL HeatWave com índices otimizados.
+- **Banco de Dados**: MySQL 8.0 rodando em container Docker
 - **Cache**: Cache distribuído para melhorar desempenho.
 - **Logging**: Sistema centralizado para rastreamento e auditoria.
 
@@ -88,8 +88,8 @@ O **Sistema de Gerenciamento de Livraria** é uma solução completa para automa
 ### Ambiente de Produção
 - **Região**: Digital Ocean
 - **Recursos**:
-  - **Compute**: VM.Standard
-  - **Banco de Dados**: Docker -> MySQL
+  - **Compute**: DigitalOcean - NYC3
+  - **Banco de Dados**: MySQL 8.0 rodando em container Docker
   - **Armazenamento**: Block Storage integrado
   - **Proxy Reverso**: Nginx segurança e alta disponibilidade
 
@@ -118,14 +118,14 @@ O **Sistema de Gerenciamento de Livraria** é uma solução completa para automa
 
 ---
 
-## Documentação
+# Documentação
 
-### API
+## API :green_book: :point_down:
 - **Swagger UI**: [Acesse a documentação interativa](https://api.n8nvinicius.dev/swagger-ui/index.html#/)
 - **Endpoints**: [Documentação técnica detalhada](endpoints.md)
 - **Servidor Status**: [Acessar](https://api.n8nvinicius.dev/health)
   
-### Frontend
+## Frontend :green_book: :point_down:
 - **Repositório**: [GitHub](https://github.com/viniciusciconebarbosa/erp-system-library-front)
 - **Aplicação**: [Acesse a interface](https://erp-system-library-front.vercel.app/login)
 
