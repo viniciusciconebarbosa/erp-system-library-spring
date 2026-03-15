@@ -28,7 +28,7 @@ public class StorageConfig {
 
     public String getBaseImageUrl() {
         if ("prod".equals(activeProfile)) {
-            return "https://minha1api.duckdns.org";
+            return "https://api.n8nvinicius.dev";
         }
         return "http://localhost:8080";
     }
