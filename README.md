@@ -59,7 +59,7 @@ O **Sistema de Gerenciamento de Livraria** é uma solução completa para automa
 - **Java 21** com **Spring Boot 3.x**
 - **Spring Security** para autenticação e autorização
 - **JWT** para autenticação segura
-- **Oracle Database** com MySQL HeatWave
+- **Database**  MySQL 8.0 rodando em container Docker
 - **Maven** para gerenciamento de dependências
 - **JUnit 5** para testes unitários
 - **Swagger/OpenAPI** para documentação da API
