@@ -267,7 +267,7 @@ O projeto estará disponível em:
   1. Validação de código (linting e formatação)
   2. Execução de testes unitários e de integração
   3. Build da aplicação
-  4. Deploy na Oracle Cloud (backend) e Vercel (frontend)
+  4. Deploy na Digital Ocean (backend) e Vercel (frontend)
   5. Validação pós-deploy
   6. Notificação de status via email ou Slack
 
@@ -289,7 +289,7 @@ O projeto estará disponível em:
 ### Backup
 - **Frequência**: Diário, às 02:00
 - **Retenção**: 30 dias
-- **Restauração**: Disponível via console da Oracle Cloud
+- **Restauração**: Disponível via console da Digital Ocean
 
 ### Manutenção
 - **Janela**: Domingo, 01:00–03:00 (horário de Brasília)
