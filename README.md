@@ -29,7 +29,7 @@ O **Sistema de Gerenciamento de Livraria** é uma solução completa para automa
 
 ---
 
-## ✨ Funcionalidades
+## Funcionalidades 
 
 - **Gestão de Acervo**: Cadastro, edição e consulta de itens bibliográficos.
 - **Controle de Empréstimos**: Automatização de empréstimos, devoluções e multas.
