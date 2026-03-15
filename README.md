@@ -41,7 +41,7 @@ O **Sistema de Gerenciamento de Livraria** é uma solução completa para automa
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 ### Backend
 - **Java 21** com **Spring Boot 3.x**
@@ -66,7 +66,7 @@ O **Sistema de Gerenciamento de Livraria** é uma solução completa para automa
 
 ---
 
-## 🏛️ Arquitetura do Sistema
+## Arquitetura do Sistema
 
 ### Backend
 - **API RESTful**: Desenvolvida com Spring Boot, seguindo padrões de microserviços.
@@ -83,7 +83,7 @@ O **Sistema de Gerenciamento de Livraria** é uma solução completa para automa
 
 ---
 
-## ☁️ Infraestrutura
+## Infraestrutura
 
 ### Ambiente de Produção
 - **Região**: Oracle Cloud São Paulo
@@ -118,7 +118,7 @@ O **Sistema de Gerenciamento de Livraria** é uma solução completa para automa
 
 ---
 
-## 📚 Documentação
+## Documentação
 
 ### API
 - **Swagger UI**: [Acesse a documentação interativa](https://minha1api.duckdns.org/swagger-ui/index.html#/)
@@ -130,7 +130,7 @@ O **Sistema de Gerenciamento de Livraria** é uma solução completa para automa
 
 ---
 
-## 🔧 Configuração e Desenvolvimento
+## Configuração e Desenvolvimento
 
 ### Pré-requisitos
 - **Java 21** ou superior
@@ -192,7 +192,7 @@ O projeto estará disponível em:
 - **Swagger UI**: http://localhost:8080/swagger-ui.html
 - **API Docs**: http://localhost:8080/api-docs
 
-### 🧪 Executando os Testes
+### Executando os Testes
 
 #### Executar todos os testes
 ```bash
@@ -224,13 +224,13 @@ O projeto estará disponível em:
 <img width="1903" height="745" alt="image" src="https://github.com/user-attachments/assets/6615919d-45d1-44ae-9fea-bc0c1c5a2287" />
 
 
-### 📊 Estrutura dos Testes
+### Estrutura dos Testes
 - **Testes Unitários**: Localizados em `src/test/java/`
 - **Testes de Integração**: Testes de controllers e serviços
 - **Banco de Teste**: Utiliza H2 em memória para testes
 - **Relatórios**: Gerados em `target/surefire-reports/`
 
-### 🔧 Comandos Úteis para Desenvolvimento
+### Comandos Úteis para Desenvolvimento
 
 #### Limpar e recompilar
 ```bash
@@ -257,7 +257,7 @@ O projeto estará disponível em:
 
 ---
 
-## 🚀 Deploy
+## Deploy
 
 ### Pipeline de Produção
 - **Ferramenta**: GitHub Actions
@@ -271,7 +271,7 @@ O projeto estará disponível em:
 
 ---
 
-## 📊 Monitoramento e Manutenção
+## Monitoramento e Manutenção
 
 ### Métricas Monitoradas
 - **Infraestrutura**: CPU, memória, disco e rede
@@ -296,7 +296,7 @@ O projeto estará disponível em:
 
 ---
 
-## 📞 Suporte
+## Suporte
 
 - **Email**: [viniciuscicone@gmail.com](mailto:viniciuscicone@gmail.com)
 - **Documentação**: [Wiki do Projeto](link-para-wiki)
