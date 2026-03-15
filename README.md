@@ -7,10 +7,10 @@ Um sistema ERP robusto projetado para otimizar a gestão de Livraria comunitári
 ## Índice
 - [Visão Geral](#visão-geral)
 - [Funcionalidades](#funcionalidades)
+- [Documentação](#documentação)
 - [Tecnologias Utilizadas](#tecnologias-utilizadas)
 - [Arquitetura do Sistema](#arquitetura-do-sistema)
 - [Infraestrutura](#infraestrutura)
-- [Documentação](#documentação)
 - [Configuração e Desenvolvimento](#configuração-e-desenvolvimento)
 - [Deploy](#deploy)
 - [Monitoramento e Manutenção](#monitoramento-e-manutenção)
@@ -39,6 +39,18 @@ O **Sistema de Gerenciamento de Livraria** é uma solução completa para automa
 - **Relatórios em Tempo Real**: Estatísticas detalhadas sobre uso e desempenho.
 - **Interface Acessível**: Design responsivo e compatível com padrões de acessibilidade.
 
+---
+
+# Documentação
+
+## API :green_book: :point_down:
+- **Swagger UI**: [Acesse a documentação interativa](https://api.n8nvinicius.dev/swagger-ui/index.html#/)
+- **Endpoints**: [Documentação técnica detalhada](endpoints.md)
+- **Servidor Status**: [Acessar](https://api.n8nvinicius.dev/health)
+  
+## Frontend :green_book: :point_down:
+- **Repositório**: [GitHub](https://github.com/viniciusciconebarbosa/erp-system-library-front)
+- **Aplicação**: [Acesse a interface](https://erp-system-library-front.vercel.app/login)
 ---
 
 ## Tecnologias Utilizadas
@@ -116,18 +128,7 @@ O **Sistema de Gerenciamento de Livraria** é uma solução completa para automa
 - **Testes**: Ambiente espelhado para validação.
 - **CI/CD**: Integração contínua via GitHub Actions.
 
----
 
-# Documentação
-
-## API :green_book: :point_down:
-- **Swagger UI**: [Acesse a documentação interativa](https://api.n8nvinicius.dev/swagger-ui/index.html#/)
-- **Endpoints**: [Documentação técnica detalhada](endpoints.md)
-- **Servidor Status**: [Acessar](https://api.n8nvinicius.dev/health)
-  
-## Frontend :green_book: :point_down:
-- **Repositório**: [GitHub](https://github.com/viniciusciconebarbosa/erp-system-library-front)
-- **Aplicação**: [Acesse a interface](https://erp-system-library-front.vercel.app/login)
 
 ---
 
