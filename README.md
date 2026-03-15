@@ -86,12 +86,12 @@ O **Sistema de Gerenciamento de Livraria** é uma solução completa para automa
 ## Infraestrutura
 
 ### Ambiente de Produção
-- **Região**: Oracle Cloud São Paulo
+- **Região**: Digital Ocean
 - **Recursos**:
-  - **Compute**: VM.Standard.E4.Flex
-  - **Banco de Dados**: Oracle MySQL HeatWave
+  - **Compute**: VM.Standard
+  - **Banco de Dados**: Docker -> MySQL
   - **Armazenamento**: Block Storage integrado
-  - **Proxy Reverso**: Nginx para alta disponibilidade
+  - **Proxy Reverso**: Nginx segurança e alta disponibilidade
 
 ### Configuração do Nginx
 - **Portas**:
@@ -121,9 +121,10 @@ O **Sistema de Gerenciamento de Livraria** é uma solução completa para automa
 ## Documentação
 
 ### API
-- **Swagger UI**: [Acesse a documentação interativa](https://minha1api.duckdns.org/swagger-ui/index.html#/)
+- **Swagger UI**: [Acesse a documentação interativa](https://api.n8nvinicius.dev/swagger-ui/index.html#/)
 - **Endpoints**: [Documentação técnica detalhada](endpoints.md)
-
+- **Servidor Status**: [Acessar](https://api.n8nvinicius.dev/health)
+  
 ### Frontend
 - **Repositório**: [GitHub](https://github.com/viniciusciconebarbosa/erp-system-library-front)
 - **Aplicação**: [Acesse a interface](https://erp-system-library-front.vercel.app/login)
