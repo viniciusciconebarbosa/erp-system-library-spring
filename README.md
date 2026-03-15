@@ -25,7 +25,7 @@ O **Sistema de Gerenciamento de Livraria** é uma solução completa para automa
 ## Foto
 
 ![javaSpring d0b80f42](https://github.com/user-attachments/assets/e690bb8c-4efe-4bbc-bba7-b3b84c8ce520)
-
+![foto](/ddd649.jpg)
 
 ---
 
