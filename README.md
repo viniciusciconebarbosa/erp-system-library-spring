@@ -45,7 +45,7 @@ O **Sistema de Gerenciamento de Livraria** é uma solução completa para automa
 
 ## API :green_book: :point_down:
 - **Swagger UI**: [Acesse a documentação interativa](https://api.n8nvinicius.dev/swagger-ui/index.html#/)
-- **Endpoints**: [Documentação técnica detalhada](endpoints.md)
+- **Endpoints**: [Documentação técnica detalhada](https://api.n8nvinicius.dev/api-docs)
 - **Servidor Status**: [Acessar](https://api.n8nvinicius.dev/health)
   
 ## Frontend :green_book: :point_down:
