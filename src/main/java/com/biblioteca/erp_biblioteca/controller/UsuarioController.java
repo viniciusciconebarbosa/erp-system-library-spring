@@ -8,6 +8,7 @@ import com.biblioteca.erp_biblioteca.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,6 +27,9 @@ import java.util.UUID;
 public class UsuarioController {
     private final UsuarioService usuarioService;
 
+
+
+
     @PostMapping("/registro")
     @Operation(
         summary = "Registra um novo usuário",
@@ -42,6 +46,11 @@ public class UsuarioController {
         Usuario novoUsuario = usuarioService.criarUsuario(usuarioDTO);
         return ResponseEntity.ok(novoUsuario);
     }
+
+
+
+
+
 
     @PostMapping("/admin/registro")
     @PreAuthorize("hasRole('ADMIN')")
@@ -63,6 +72,12 @@ public class UsuarioController {
         return ResponseEntity.ok(novoAdmin);
     }
 
+
+
+
+
+
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COMUM')")
     @Operation(
@@ -82,6 +97,11 @@ public class UsuarioController {
         return ResponseEntity.ok(usuario);
     }
 
+
+
+
+
+
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
@@ -98,8 +118,14 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarios);
     }
 
+
+
+
+
+
+
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @Operation(
         summary = "Atualiza um usuário",
         description = "Permite a atualização dos dados de um usuário existente. A senha é opcional na atualização."
@@ -115,10 +141,16 @@ public class UsuarioController {
         @Parameter(description = "ID do usuário", example = "123e4567-e89b-12d3-a456-426614174000")
         @PathVariable UUID id,
         @Parameter(description = "Dados atualizados do usuário")
+
         @Validated(UsuarioDTO.Update.class) @RequestBody UsuarioDTO usuarioDTO) {
         Usuario usuarioAtualizado = usuarioService.atualizarUsuario(id, usuarioDTO);
         return ResponseEntity.ok(usuarioAtualizado);
     }
+
+
+
+
+
 
     @PutMapping("/{id}/role")
     @PreAuthorize("hasRole('ADMIN')")
@@ -141,6 +173,11 @@ public class UsuarioController {
         Usuario usuarioAtualizado = usuarioService.atualizarRoleUsuario(id, novaRole);
         return ResponseEntity.ok(usuarioAtualizado);
     }
+
+
+
+
+
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
