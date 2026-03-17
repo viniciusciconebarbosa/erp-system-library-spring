@@ -1,6 +1,7 @@
 package com.biblioteca.erp_biblioteca.model;
 
 import com.biblioteca.erp_biblioteca.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,10 +38,12 @@ public class Usuario {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     @OneToMany(mappedBy = "doador", cascade = CascadeType.REMOVE)
     private Set<Livro> livrosDoados;
 
     @ToString.Exclude
+    @JsonIgnore
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE)
     private Set<Locacao> locacoes;

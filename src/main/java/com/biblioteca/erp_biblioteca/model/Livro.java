@@ -3,6 +3,7 @@ package com.biblioteca.erp_biblioteca.model;
 import com.biblioteca.erp_biblioteca.enums.ClassificacaoEtaria;
 import com.biblioteca.erp_biblioteca.enums.EstadoConservacao;
 import com.biblioteca.erp_biblioteca.enums.Genero;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -45,6 +46,7 @@ public class Livro {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     @OneToMany(mappedBy = "livro", cascade = CascadeType.ALL)
     private Set<Locacao> locacoes;
 }
