@@ -125,7 +125,7 @@ public class UsuarioController {
 
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+    @PreAuthorize("hasRole('ADMIN') or #id.toString() == authentication.principal.id.toString()")
     @Operation(
         summary = "Atualiza um usuário",
         description = "Permite a atualização dos dados de um usuário existente. A senha é opcional na atualização."
