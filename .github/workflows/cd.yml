@@ -1,11 +1,10 @@
-name: CD
+name: CD (Docker)
 
 on:
   workflow_run:
     workflows: ["CI"]
-    types:
-      - completed
-    branches: [ master ]
+    types: [completed]
+    branches: [master]
 
 jobs:
   deploy:
@@ -16,14 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download JAR
-        uses: actions/download-artifact@v4
-        with:
-          name: biblioteca-api
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ github.event.workflow_run.id }}
-
-      - name: Prepare directory on server
+      - name: Prepare environment and Deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DROPLET_IP }}
@@ -31,73 +23,32 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            mkdir -p /root/biblioteca-api/uploads/capas
-            chmod -R 755 /root/biblioteca-api/uploads
-            # Limpa o JAR antigo para evitar conflitos
-            rm -f /root/biblioteca-api/*.jar || true
+            # 1. Entra no diretório (ou cria se não existir)
+            mkdir -p /root/erp-system-library-spring
+            cd /root/erp-system-library-spring
 
-      - name: Copy initial images to server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.DROPLET_IP }}
-          username: ${{ secrets.DROPLET_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          source: "uploads/capas/"
-          target: "/root/biblioteca-api/uploads/"
-          strip_components: 1
+            # 2. Atualiza o código fonte
+            if [ -d ".git" ]; then
+              git pull origin master
+            else
+              git clone https://github.com/viniciusciconebarbosa/erp-system-library-spring.git .
+            fi
 
-      - name: Copy JAR to server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.DROPLET_IP }}
-          username: ${{ secrets.DROPLET_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          source: "*.jar"
-          target: "/root/biblioteca-api/"
-
-      - name: Setup and Start Service
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.DROPLET_IP }}
-          username: ${{ secrets.DROPLET_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            cd /root/biblioteca-api
-            mv *.jar biblioteca-api.jar || true
-            sudo systemctl stop biblioteca-api || true
-            
-            cat > /root/biblioteca-api/.env << EOL
-            DB_URL=jdbc:mysql://${{ secrets.DB_HOST }}:3306/erp_biblioteca?createDatabaseIfNotExist=true
+            # 3. Cria o arquivo .env a partir das Secrets do GitHub
+            cat > .env << EOL
+            DB_URL=jdbc:mysql://db:3306/erp_biblioteca?createDatabaseIfNotExist=true
             DB_USER=${{ secrets.DB_USER }}
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             JWT_EXPIRATION=${{ secrets.JWT_EXPIRATION }}
-            SPRING_PROFILES_ACTIVE=prod
+            STORAGE_UPLOAD_DIR=uploads/capas
+            CORS_ALLOWED_ORIGINS=${{ secrets.CORS_ALLOWED_ORIGINS }}
             EOL
-            
-            sudo tee /etc/systemd/system/biblioteca-api.service << EOL
-            [Unit]
-            Description=Biblioteca API
-            After=network.target
-            
-            [Service]
-            User=root
-            WorkingDirectory=/root/biblioteca-api
-            EnvironmentFile=/root/biblioteca-api/.env
-            ExecStart=/usr/bin/java -jar biblioteca-api.jar
-            SuccessExitStatus=143
-            TimeoutStopSec=10
-            Restart=on-failure
-            RestartSec=5
-            
-            [Install]
-            WantedBy=multi-user.target
-            EOL
-            
-            sudo systemctl daemon-reload
-            sudo systemctl enable biblioteca-api
-            sudo systemctl start biblioteca-api
-            sudo systemctl status biblioteca-api --no-pager
+
+            # 4. Para o serviço antigo do systemd (apenas na primeira vez)
+            sudo systemctl stop biblioteca-api || true
+            sudo systemctl disable biblioteca-api || true
+
+            # 5. Sobe o ambiente com Docker
+            docker-compose down
+            docker-compose up -d --build
