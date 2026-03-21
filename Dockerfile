@@ -5,6 +5,8 @@ RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:21-jre
 WORKDIR /app
+RUN mkdir -p uploads/capas && chmod -R 777 uploads
+COPY ./uploads /app/uploads
 RUN apt-get update && apt-get install -y libfontconfig1 && rm -rf /var/lib/apt/lists/*
 COPY --from=build /app/target/*.jar app.jar
 
