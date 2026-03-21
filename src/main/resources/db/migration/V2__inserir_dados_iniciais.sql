@@ -1,6 +1,7 @@
 -- Inserindo usuários iniciais
 INSERT INTO usuarios (id, nome, email, senha, idade, role) VALUES
 (UUID_TO_BIN(UUID()), 'Admin Sistema', 'admin@biblioteca.com', '$2a$10$YL3GZO3zHHOVw3YlL0.1/OVhp1oPY0zyY5.6RbiMqoX3re8xAXqxq', 35, 'ADMIN'),
+(UUID_TO_BIN(UUID()), 'Usuario teste', 'test@email.com', '$2a$10$Twvferm8DA/iUh7WxZR8xevhIjG2V5XMkze7Rf/WjLVBGnhRtlLQa', 18, 'ADMIN'),
 (UUID_TO_BIN(UUID()), 'Maria Silva', 'maria@email.com', '$2a$10$YL3GZO3zHHOVw3YlL0.1/OVhp1oPY0zyY5.6RbiMqoX3re8xAXqxq', 28, 'COMUM'),
 (UUID_TO_BIN(UUID()), 'João Santos', 'joao@email.com', '$2a$10$YL3GZO3zHHOVw3YlL0.1/OVhp1oPY0zyY5.6RbiMqoX3re8xAXqxq', 42, 'COMUM');
 
