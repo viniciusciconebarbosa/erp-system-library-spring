@@ -43,6 +43,7 @@ jobs:
             JWT_EXPIRATION=${{ secrets.JWT_EXPIRATION }}
             STORAGE_UPLOAD_DIR=uploads/capas
             CORS_ALLOWED_ORIGINS=${{ secrets.CORS_ALLOWED_ORIGINS }}
+            APP_API_BASE_URL=${{ secrets.APP_API_BASE_URL }}
             EOL
 
             # 4. Para o serviço antigo do systemd (apenas na primeira vez)

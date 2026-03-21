@@ -17,28 +17,24 @@ public class OpenApiConfig {
     @Value("${spring.profiles.active:dev}")
     private String activeProfile;
 
+    @Value("${app.api-base-url:http://localhost:8080}")
+    private String apiBaseUrl;
+
     @Bean
     public OpenAPI customOpenAPI() {
-        Server server;
-        
-        if ("prod".equals(activeProfile)) {
-            server = new Server()
-                .url("https://minha1api.duckdns.org")
-                .description("Servidor de Produção");
-        } else {
-            server = new Server()
-                .url("http://localhost:8080")
-                .description("Servidor Local");
-        }
+
+        Server server = new Server()
+                .url(apiBaseUrl)
+                .description("prod".equals(activeProfile) ? "Servidor de Produção" : "Servidor Local");
 
         return new OpenAPI()
                 .info(new Info()
-                        .title("API ERP Biblioteca Comunitária")
+                        .title("API ERP Biblioteca")
                         .version("1.0")
-                        .description("API REST para gerenciamento de biblioteca comunitária, permitindo cadastro de livros, " +
+                        .description("API REST para gerenciamento de biblioteca, permitindo cadastro de livros, " +
                                 "controle de locações e gestão de usuários.")
                         .contact(new Contact()
-                                .name("Biblioteca Comunitária")
+                                .name("Biblioteca ERP")
                                 .email("contato@biblioteca.com"))
                         .license(new License()
                                 .name("Apache 2.0")

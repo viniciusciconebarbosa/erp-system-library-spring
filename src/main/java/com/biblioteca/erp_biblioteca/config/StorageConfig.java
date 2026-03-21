@@ -23,16 +23,12 @@ public class StorageConfig {
     private int imageMaxWidth;
     private int imageMaxHeight;
 
-    @Value("${spring.profiles.active:dev}")
-    private String activeProfile;
+    @Value("${app.api-base-url:http://localhost:8080}")
+    private String apiBaseUrl;
 
     public String getBaseImageUrl() {
-        if ("prod".equals(activeProfile)) {
-            return "https://api.n8nvinicius.dev";
-        }
-        return "http://localhost:8080";
+        return apiBaseUrl;
     }
-
     @Bean
     public Path rootLocation() {
         return Paths.get(uploadDir);
