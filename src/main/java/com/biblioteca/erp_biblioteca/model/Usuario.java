@@ -22,6 +22,7 @@ import java.util.UUID;
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID") // Adicione isso!
     private UUID id;
     
     private String nome;

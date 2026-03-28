@@ -1,6 +1,7 @@
 package com.biblioteca.erp_biblioteca.service;
 
 import com.biblioteca.erp_biblioteca.dto.LoginDTO;
+import com.biblioteca.erp_biblioteca.dto.MessageBrokerDTO;
 import com.biblioteca.erp_biblioteca.dto.UsuarioDTO;
 import com.biblioteca.erp_biblioteca.enums.Role;
 import com.biblioteca.erp_biblioteca.exception.EmailJaCadastradoException;
@@ -24,6 +25,7 @@ public class AuthService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
+    private final NotificationPublisher notificationPublisher;
     
     public Map<String, Object> login(LoginDTO loginDTO) {
         Authentication authentication = authenticationManager.authenticate(
@@ -58,12 +60,27 @@ public class AuthService {
             .build();
 
         usuario = usuarioRepository.save(usuario);
+
+        try {
+            MessageBrokerDTO notification = MessageBrokerDTO.builder()
+                    .appId("ERP_BIBLIOTECA")
+                    .recipientEmail(usuario.getEmail())
+                    .recipientName(usuario.getNome())
+                    .subject("Bem-vindo à Biblioteca!")
+                    .content("Olá " + usuario.getNome() + ", seu cadastro foi realizado com sucesso!")
+                    .useAI(true)
+                    .build();
+            notificationPublisher.sendNotification(notification);
+        } catch (Exception e) {
+            System.err.println("Erro ao enviar para o RabbitMQ: " + e.getMessage());
+        }
+
         String token = tokenProvider.generateToken(usuario);
 
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);
         response.put("usuario", usuario);
-        
+
         return response;
     }
 }

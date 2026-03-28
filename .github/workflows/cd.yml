@@ -36,7 +36,7 @@ jobs:
 
             # 3. Cria o arquivo .env a partir das Secrets do GitHub
             cat > .env << EOL
-            DB_URL=jdbc:mysql://db:3306/erp_biblioteca?createDatabaseIfNotExist=true
+            DB_URL=jdbc:postgresql://db:5432/erp_biblioteca?createDatabaseIfNotExist=true
             DB_USER=${{ secrets.DB_USER }}
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
@@ -50,6 +50,9 @@ jobs:
             sudo systemctl stop biblioteca-api || true
             sudo systemctl disable biblioteca-api || true
 
-            # 5. Sobe o ambiente com Docker
+            # 5. Garante que a rede compartilhada existe
+            docker network create notification_network || true
+
+            # 6. Sobe o ambiente com Docker
             docker-compose down
             docker-compose up -d --build

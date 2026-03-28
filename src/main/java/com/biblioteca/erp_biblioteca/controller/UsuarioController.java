@@ -47,11 +47,6 @@ public class UsuarioController {
         return ResponseEntity.ok(novoUsuario);
     }
 
-
-
-
-
-
     @PostMapping("/admin/registro")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
@@ -71,9 +66,6 @@ public class UsuarioController {
         Usuario novoAdmin = usuarioService.criarUsuarioAdmin(usuarioDTO);
         return ResponseEntity.ok(novoAdmin);
     }
-
-
-
 
 
 

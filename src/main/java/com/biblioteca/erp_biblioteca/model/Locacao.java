@@ -19,6 +19,7 @@ import java.util.UUID;
 public class Locacao {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID") // Adicione isso!
     private UUID id;
 
     @ManyToOne

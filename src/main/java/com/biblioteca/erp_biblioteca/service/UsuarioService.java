@@ -1,5 +1,6 @@
 package com.biblioteca.erp_biblioteca.service;
 
+import com.biblioteca.erp_biblioteca.dto.MessageBrokerDTO;
 import com.biblioteca.erp_biblioteca.dto.UsuarioDTO;
 import com.biblioteca.erp_biblioteca.enums.Role;
 import com.biblioteca.erp_biblioteca.exception.BusinessException;
@@ -19,6 +20,25 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final NotificationPublisher notificationPublisher; // 1. Injeta o Publisher
+
+
+    private void enviarMensagem(Usuario usuario) {
+        try {
+            MessageBrokerDTO notification = MessageBrokerDTO.builder()
+                    .appId("ERP_BIBLIOTECA")
+                    .recipientEmail(usuario.getEmail())
+                    .recipientName(usuario.getNome())
+                    .subject("Bem-vindo à Biblioteca!")
+                    .content("Olá " + usuario.getNome() + ", seu cadastro foi realizado com sucesso!")
+                    .useAI(true)
+                    .build();
+
+            notificationPublisher.sendNotification(notification);
+        } catch (Exception e) {
+            System.err.println("Erro ao enviar para o RabbitMQ: {} "+ e.getMessage());
+        }
+    }
 
     public Usuario criarUsuario(UsuarioDTO usuarioDTO) {
         if (usuarioRepository.findByEmail(usuarioDTO.getEmail()).isPresent()) {
@@ -26,14 +46,18 @@ public class UsuarioService {
         }
 
         Usuario usuario = Usuario.builder()
-            .nome(usuarioDTO.getNome())
-            .email(usuarioDTO.getEmail())
-            .senha(passwordEncoder.encode(usuarioDTO.getSenha()))
-            .idade(usuarioDTO.getIdade())
-            .role(Role.COMUM)
-            .build();
+                .nome(usuarioDTO.getNome())
+                .email(usuarioDTO.getEmail())
+                .senha(passwordEncoder.encode(usuarioDTO.getSenha()))
+                .idade(usuarioDTO.getIdade())
+                .role(Role.COMUM)
+                .build();
 
-        return usuarioRepository.save(usuario);
+        Usuario usuarioSalvo = usuarioRepository.save(usuario);
+
+        enviarMensagem(usuarioSalvo);
+
+        return usuarioSalvo;
     }
 
     public Usuario criarUsuarioAdmin(UsuarioDTO usuarioDTO) {
@@ -49,7 +73,11 @@ public class UsuarioService {
             .role(Role.ADMIN)
             .build();
 
-        return usuarioRepository.save(usuario);
+        Usuario usuarioSalvo = usuarioRepository.save(usuario);
+
+        enviarMensagem(usuarioSalvo);
+
+        return usuarioSalvo;
     }
 
     public Usuario buscarUsuario(UUID id) {

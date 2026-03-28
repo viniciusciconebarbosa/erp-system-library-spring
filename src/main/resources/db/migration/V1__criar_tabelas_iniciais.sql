@@ -1,7 +1,7 @@
 -- Criação das tabelas para o ERP de Biblioteca
 
 CREATE TABLE usuarios (
-    id BINARY(16) NOT NULL,
+    id UUID NOT NULL,
     nome VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE usuarios (
 );
 
 CREATE TABLE livros (
-    id BINARY(16) NOT NULL,
+    id UUID NOT NULL,
     titulo VARCHAR(255) NOT NULL,
     autor VARCHAR(255) NOT NULL,
     genero VARCHAR(50),
@@ -20,7 +20,7 @@ CREATE TABLE livros (
     disponivel_locacao BOOLEAN NOT NULL DEFAULT TRUE,
     classificacao_etaria VARCHAR(50),
     estado_conservacao VARCHAR(50),
-    doador_id BINARY(16),
+    doador_id UUID,
     sinopse TEXT,
     PRIMARY KEY (id),
     CONSTRAINT fk_doador FOREIGN KEY (doador_id) REFERENCES usuarios(id) ON DELETE CASCADE,
@@ -28,11 +28,10 @@ CREATE TABLE livros (
 );
 
 CREATE TABLE locacoes (
-    id BINARY(16) NOT NULL,
-    livro_id BINARY(16) NOT NULL,
-    usuario_id BINARY(16) NOT NULL,
-    data_locacao DATETIME NOT NULL,
-    data_devolucao DATETIME,
+    id UUID NOT NULL,
+    livro_id UUID NOT NULL,
+    usuario_id UUID NOT NULL,
+    data_locacao TIMESTAMP NOT NULL,
     status VARCHAR(50) NOT NULL DEFAULT 'ATIVA',
     PRIMARY KEY (id),
     CONSTRAINT fk_locacao_livro FOREIGN KEY (livro_id) REFERENCES livros(id) ON DELETE CASCADE,
@@ -40,5 +39,6 @@ CREATE TABLE locacoes (
     CONSTRAINT check_status CHECK (status IN ('ATIVA', 'FINALIZADA', 'CANCELADA'))
 );
 
+-- Índices
 CREATE INDEX idx_livro_titulo ON livros(titulo);
-CREATE FULLTEXT INDEX idx_livro_capa_foto ON livros(capa_foto);
+CREATE INDEX idx_livro_capa_foto ON livros(capa_foto);
