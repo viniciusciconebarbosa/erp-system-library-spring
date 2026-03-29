@@ -143,6 +143,11 @@ POST /api/auth/registro
                              └─────────────────────────┘
 ```
 
+### Foto - Rabbit
+
+<img width="1898" height="427" alt="dap" src="https://github.com/user-attachments/assets/3742d290-a6f9-4114-bfcf-79b3897c350d" />
+
+
 ---
 
 ## Tecnologias Utilizadas
