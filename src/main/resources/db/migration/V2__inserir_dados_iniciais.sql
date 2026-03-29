@@ -2,7 +2,7 @@
 
 INSERT INTO usuarios (id, nome, email, senha, idade, role) VALUES
    (gen_random_uuid(), 'Admin Sistema', 'admin@biblioteca.com', '$2a$10$YL3GZO3zHHOVw3YlL0.1/OVhp1oPY0zyY5.6RbiMqoX3re8xAXqxq', 35, 'ADMIN'),
-   (gen_random_uuid(), 'Usuario teste', 'test@email.com', '$2a$10$Twvferm8DA/iUh7WxZR8xevhIjG2V5XMkze7Rf/WjLVBGnhRtlLQa', 18, 'ADMIN'),
+   (gen_random_uuid(), 'Usuario teste', 'test@email.com', '$2a$10$ysAQmQgr6uc.yI2aJsUZyur0CDb2WcuUhZY5l/RCAmrGzPoPV3H.y', 18, 'ADMIN'),
    (gen_random_uuid(), 'Maria Silva', 'maria@email.com', '$2a$10$YL3GZO3zHHOVw3YlL0.1/OVhp1oPY0zyY5.6RbiMqoX3re8xAXqxq', 28, 'COMUM'),
    (gen_random_uuid(), 'João Santos', 'joao@email.com', '$2a$10$YL3GZO3zHHOVw3YlL0.1/OVhp1oPY0zyY5.6RbiMqoX3re8xAXqxq', 42, 'COMUM');
 
