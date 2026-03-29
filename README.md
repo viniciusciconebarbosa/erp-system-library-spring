@@ -3,7 +3,7 @@
   &nbsp;&nbsp;
   <img src="https://www.vectorlogo.zone/logos/postgresql/postgresql-icon.svg" width="90" alt="PostgreSQL Logo"/>
   &nbsp;&nbsp;
-  <img src="https://www.vectorlogo.zone/logos/rabbitmq/rabbitmq-icon.svg" width="90" alt="RabbitMQ Logo"/>
+  <img src="https://www.vectorlogo.zone/logos/rabbitmq/rabbitmq-icon.svg" width="70" alt="RabbitMQ Logo"/>
   &nbsp;&nbsp;
   <img src="https://www.docker.com/wp-content/uploads/2022/03/vertical-logo-monochromatic.png" width="80" alt="Docker Logo"/>
 </p>
